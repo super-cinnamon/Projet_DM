@@ -56,6 +56,7 @@ class Ui(QtWidgets.QMainWindow):
 
                 self.dataset_info= self.findChild(QtWidgets.QLabel,'dataset_info')
                 self.column_info= self.findChild(QtWidgets.QLabel,'column_info')
+                self.correlation= self.findChild(QtWidgets.QLabel,'correlation_label')
 
                 self.pandasTv=self.findChild(QtWidgets.QTableView,'pandasTv')
                 self.pandasTv.setSortingEnabled(True)
@@ -141,6 +142,7 @@ class Ui(QtWidgets.QMainWindow):
                                 self.column2_combo.clear()
                                 self.column1_combo.setEnabled(False)
                                 self.column2_combo.setEnabled(False)
+                                self.correlation_label.setText("")
                         if self.boxplot_button.isChecked():
                                 sc = MplCanvas(self.frame, width=4, height=4, dpi=100)
                                 sc.axes.boxplot(self.df[self.df.columns[self.item.column()]])
@@ -161,6 +163,7 @@ class Ui(QtWidgets.QMainWindow):
                                 self.column2_combo.clear()
                                 self.column1_combo.setEnabled(False)
                                 self.column2_combo.setEnabled(False)
+                                self.correlation_label.setText("")
                         if self.histoplot_button.isChecked():
                                 sc = MplCanvas(self.frame, width=4, height=4, dpi=100)
                                 sns.distplot(self.df[self.df.columns[self.item.column()]],ax=sc.axes)
@@ -194,6 +197,10 @@ class Ui(QtWidgets.QMainWindow):
                                 # Create a placeholder widget to hold our toolbar and canvas.
                                 self.frame.setLayout(layout)
                                 layout.deleteLater()
+                                
+                                if self.df[[self.column1_combo.currentText()]].dtypes[0] != 'object' and self.df[[self.column2_combo.currentText()]].dtypes[0] != 'object':
+                                        self.correlation_label.setText(str(correlation(self.df[[self.column1_combo.currentText()]],self.df[[self.column2_combo.currentText()]])))
+                                else:  self.correlation_label.setText("")
                 except: print("")
         
         def PlotScatterAuto(self):
@@ -204,11 +211,17 @@ class Ui(QtWidgets.QMainWindow):
 
                                 # Create toolbar, passing canvas as first parament, parent (self, the MainWindow) as second.
                                 layout = QtWidgets.QVBoxLayout()
-                                layout.addWidget(sc)                
+                                layout.addWidget(sc)        
 
                                 # Create a placeholder widget to hold our toolbar and canvas.
                                 self.frame.setLayout(layout)
                                 layout.deleteLater()
+                                print("well hi")
+                                print("lets see " + str(self.df[[self.column1_combo.currentText()]].dtypes[0]))
+                                print("im tired "+str(self.df[[self.column1_combo.currentText()]].dtype))
+                                if self.df[[self.column1_combo.currentText()]].dtypes[0] != 'object' and self.df[[self.column2_combo.currentText()]].dtypes[0] != 'object':
+                                        self.correlation_label.setText(str(correlation(self.df[[self.column1_combo.currentText()]],self.df[[self.column2_combo.currentText()]])))
+                                else:  self.correlation_label.setText("")
                 except: print("")
 
         def DrawColumnClickListener(self):
@@ -251,6 +264,10 @@ class Ui(QtWidgets.QMainWindow):
                                         # Create a placeholder widget to hold our toolbar and canvas.
                                         self.frame.setLayout(layout)
                                         layout.deleteLater()
+                                        if self.df[[self.column1_combo.currentText()]].dtypeS[0] != 'object' and self.df[[self.column2_combo.currentText()]].dtypes[0] != 'object':
+                                                
+                                                self.correlation_label.setText(str(correlation(self.df[[self.column1_combo.currentText()]],self.df[[self.column2_combo.currentText()]])))
+                                        else:  self.correlation_label.setText("")
                         except: print("")
                 
 
@@ -320,6 +337,20 @@ def dispersion(df_column): #get outlier data and make it into a pandas series
                         outliers.append(each)
         return (pd.Series(np.array(mesures), index=['ecart_type', 'variance', 'IQR', 'min','quartiles', 'max']), set(outliers))
     
+def correlation(df_column1, df_column2):
+        moys = []
+        ecarts = []
+        moys.append(mean(df_column1))
+        moys.append(mean(df_column2))
+        ecarts.append(ecartType(df_column1))
+        ecarts.append(ecartType(df_column2))
+        somme = 0
+        for i in range(len(df_column1)):
+                somme =+ df_column1.iloc[i] * df_column2.iloc[i]
+        ecart_mult = len(df_column1)-1 * ecarts[0] * ecarts[1]
+        moy_mult = len(df_column1) * moys[0] * moys[1]
+
+        return (somme - moy_mult)/ecart_mult
 
 app = QtWidgets.QApplication(sys.argv)
 window = Ui()
