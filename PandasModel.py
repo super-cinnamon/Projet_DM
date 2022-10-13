@@ -34,8 +34,12 @@ class PandasModel(QtCore.QAbstractTableModel):
         return QtCore.QVariant(str(self._df.iloc[index.row(), index.column()]))
 
     def setData(self, index, value, role):
+        og = self._df.iloc[index.row(),index.column()]
+        
         if role == Qt.EditRole:
             self._df.iloc[index.row(),index.column()] = value
+            if value == "":
+                self._df.iloc[index.row(),index.column()] = og
             return True
             
     def flags(self, index):
@@ -45,6 +49,7 @@ class PandasModel(QtCore.QAbstractTableModel):
         fl |= Qt.ItemIsEnabled
         fl |= Qt.ItemIsDragEnabled
         fl |= Qt.ItemIsDropEnabled
+
         return fl
 
     def rowCount(self, parent=QtCore.QModelIndex()): 
