@@ -343,6 +343,19 @@ def correlation(df_column1, df_column2):
                 return ((top_sum - (sum_x*sum_y))/np.sqrt(np.float64((bottom_x - np.power(sum_x,2))*(bottom_y - np.power(sum_y,2)))))
         except: print("impossible to calculate")
 
+import math
+def getNull(dataframe):
+        sums = {}
+        for column in dataframe.columns:
+                for i in range(len(dataframe[[column]])):
+                        if math.isnan(dataframe[[column]].iloc[i].values[0]):
+                                if column not in sums.keys():
+                                        sums[column] = 1
+                                else:sums[column] += 1
+        return sums
+
+
+
 app = QtWidgets.QApplication(sys.argv)
 window = Ui()
 app.exec_()
