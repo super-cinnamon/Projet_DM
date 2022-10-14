@@ -198,9 +198,7 @@ class Ui(QtWidgets.QMainWindow):
                                 self.frame.setLayout(layout)
                                 layout.deleteLater()
                                 
-                                if self.df[[self.column1_combo.currentText()]].dtypes[0] != 'object' and self.df[[self.column2_combo.currentText()]].dtypes[0] != 'object':
-                                        self.correlation_label.setText(str(correlation(self.df[[self.column1_combo.currentText()]],self.df[[self.column2_combo.currentText()]])))
-                                else:  self.correlation_label.setText("")
+                                self.correlation_label.setText(str(correlation(self.df[[self.column1_combo.currentText()]],self.df[[self.column2_combo.currentText()]])))
                 except: print("")
         
         def PlotScatterAuto(self):
@@ -216,12 +214,8 @@ class Ui(QtWidgets.QMainWindow):
                                 # Create a placeholder widget to hold our toolbar and canvas.
                                 self.frame.setLayout(layout)
                                 layout.deleteLater()
-                                print("well hi")
-                                print("lets see " + str(self.df[[self.column1_combo.currentText()]].dtypes[0]))
-                                print("im tired "+str(self.df[[self.column1_combo.currentText()]].dtype))
-                                if self.df[[self.column1_combo.currentText()]].dtypes[0] != 'object' and self.df[[self.column2_combo.currentText()]].dtypes[0] != 'object':
-                                        self.correlation_label.setText(str(correlation(self.df[[self.column1_combo.currentText()]],self.df[[self.column2_combo.currentText()]])))
-                                else:  self.correlation_label.setText("")
+                                self.correlation_label.setText(str(correlation(self.df[[self.column1_combo.currentText()]],self.df[[self.column2_combo.currentText()]])))
+
                 except: print("")
 
         def DrawColumnClickListener(self):
@@ -264,10 +258,8 @@ class Ui(QtWidgets.QMainWindow):
                                         # Create a placeholder widget to hold our toolbar and canvas.
                                         self.frame.setLayout(layout)
                                         layout.deleteLater()
-                                        if self.df[[self.column1_combo.currentText()]].dtypeS[0] != 'object' and self.df[[self.column2_combo.currentText()]].dtypes[0] != 'object':
-                                                
-                                                self.correlation_label.setText(str(correlation(self.df[[self.column1_combo.currentText()]],self.df[[self.column2_combo.currentText()]])))
-                                        else:  self.correlation_label.setText("")
+                                        self.correlation_label.setText(str(correlation(self.df[[self.column1_combo.currentText()]],self.df[[self.column2_combo.currentText()]])))
+
                         except: print("")
                 
 
@@ -338,19 +330,18 @@ def dispersion(df_column): #get outlier data and make it into a pandas series
         return (pd.Series(np.array(mesures), index=['ecart_type', 'variance', 'IQR', 'min','quartiles', 'max']), set(outliers))
     
 def correlation(df_column1, df_column2):
-        moys = []
-        ecarts = []
-        moys.append(mean(df_column1))
-        moys.append(mean(df_column2))
-        ecarts.append(ecartType(df_column1))
-        ecarts.append(ecartType(df_column2))
-        somme = 0
-        for i in range(len(df_column1)):
-                somme =+ df_column1.iloc[i] * df_column2.iloc[i]
-        ecart_mult = len(df_column1)-1 * ecarts[0] * ecarts[1]
-        moy_mult = len(df_column1) * moys[0] * moys[1]
-
-        return (somme - moy_mult)/ecart_mult
+        df_column1 = pd.Series(df_column1.iloc[:,0])
+        df_column2 = pd.Series(df_column2.iloc[:,0])
+        try:
+                N = np.float64(len(df_column1))
+                xy_sum = np.float64(np.sum(df_column1*df_column2))
+                top_sum = np.float64(N*xy_sum)
+                sum_x = np.float64(np.sum(df_column1))
+                sum_y = np.float64(np.sum(df_column2))
+                bottom_x = np.float64(np.float64(len(df_column1))*np.float64(np.sum(df_column1*df_column1)))
+                bottom_y = np.float64(np.float64(len(df_column2))*np.float64(np.sum(df_column2*df_column2)))
+                return ((top_sum - (sum_x*sum_y))/np.sqrt(np.float64((bottom_x - np.power(sum_x,2))*(bottom_y - np.power(sum_y,2)))))
+        except: print("impossible to calculate")
 
 app = QtWidgets.QApplication(sys.argv)
 window = Ui()
