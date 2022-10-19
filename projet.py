@@ -23,6 +23,9 @@ class MplCanvas(FigureCanvasQTAgg):
 class Ui(QtWidgets.QMainWindow):
         def __init__(self):
                 super(Ui, self).__init__()
+                self.setWindowIcon(QtGui.QIcon('mine_data_logo.png'))
+                self.setIconSize(QtCore.QSize(200,180))
+                self.setWindowTitle("MineData")
                 uic.loadUi('PROJET_DM.ui', self)
                 ######################################### items declaration #######################################################
                 self.upload_button= self.findChild(QtWidgets.QPushButton,'upload_button')
@@ -55,7 +58,7 @@ class Ui(QtWidgets.QMainWindow):
                 self.frame=self.findChild(QtWidgets.QWidget,'widget')
 
                 self.dataset_info= self.findChild(QtWidgets.QLabel,'dataset_info')
-                self.column_info= self.findChild(QtWidgets.QLabel,'column_info')
+                self.column_info= self.findChild(QtWidgets.QPlainTextEdit,'column_info')
                 self.correlation= self.findChild(QtWidgets.QLabel,'correlation_label')
 
                 self.pandasTv=self.findChild(QtWidgets.QTableView,'pandasTv')
@@ -97,11 +100,14 @@ class Ui(QtWidgets.QMainWindow):
                                         outliers="no outliers"
                                 info="Column name: "+str(self.df.columns[self.item.column()])+"\nColumn type: "+str(self.df.dtypes[self.df.columns[self.item.column()]])+"\nMean: "+str(td['mean'])+"\nMedian: "+str(td['median'])+"\nMode: "+str(td['mode'])+"\nSymmetry: "+td['symetrie']+"\nEcart type: "+str(dis[0][0])+"\nVariance: "+str(dis[0][1])+"\nMin: "+str(dis[0][3])+"\nQ1: "+str(q[0])+"\nQ3: "+str(q[1])+"\nMax: "+str(dis[0][5])+"\nIQR: "+str(dis[0][2])+"\nOutliers: "+outliers
                                         #print(info)
-                                self.column_info.setText(info)
+                                self.column_info.clear()
+                                self.column_info.insertPlainText(info)
                         else:
                                 info="Column name: "+str(self.df.columns[self.item.column()])+"\nColumn type: "+str(self.df.dtypes[self.df.columns[self.item.column()]])
                                 print(info)
-                                self.column_info.setText(info)
+                                self.column_info.clear()
+                                self.column_info.insertPlainText(info)
+
                 except:
                         ctypes.windll.user32.MessageBoxW(0, "No dataset loaded.", "Error!", 0)
 
@@ -128,12 +134,14 @@ class Ui(QtWidgets.QMainWindow):
                                 outliers="no outliers"
                         info="Column name: "+str(self.df.columns[item.column()])+"\nColumn type: "+str(self.df.dtypes[self.df.columns[item.column()]])+"\nMean: "+str(td['mean'])+"\nMedian: "+str(td['median'])+"\nMode: "+str(td['mode'])+"\nSymmetry: "+td['symetrie']+"\nEcart type: "+str(dis[0][0])+"\nVariance: "+str(dis[0][1])+"\nMin: "+str(dis[0][3])+"\nQ1: "+str(q[0])+"\nQ3: "+str(q[1])+"\nMax: "+str(dis[0][5])+"\nIQR: "+str(dis[0][2])+"\nOutliers: "+outliers+"\nNumber of missing values: "+str(self.df[[self.df.columns[item.column()]]].isnull().sum().values[0])
                         #print(info)
-                        self.column_info.setText(info)
+                        self.column_info.clear()
+                        self.column_info.insertPlainText(info)
                 else:
-                        info="Column name: "+str(self.df.columns[item.column()])+"\nColumn type: "+str(self.df.dtypes[self.df.columns[item.column()]])
+                        info="Column name: "+str(self.df.columns[item.column()])+"\nColumn type: "+str(self.df.dtypes[self.df.columns[item.column()]])+"\nUnique Values : "+str(set(uniqueValues(self.df,self.df.columns[self.item.column()])))
                         print(info)
                         #print("unique"+str(self.df[[self.df.columns[item.column()]]].unique()))
-                        self.column_info.setText(info)
+                        self.column_info.clear()
+                        self.column_info.insertPlainText(info)
 
         def BoxPlotListener(self):
                 try:    
@@ -166,7 +174,12 @@ class Ui(QtWidgets.QMainWindow):
                                 self.correlation_label.setText("")
                         if self.histoplot_button.isChecked():
                                 sc = MplCanvas(self.frame, width=4, height=4, dpi=100)
-                                sns.distplot(self.df[self.df.columns[self.item.column()]],ax=sc.axes)
+                                if(self.df.dtypes[self.df.columns[self.item.column()]]!='object'):
+                                        sns.distplot(self.df[self.df.columns[self.item.column()]],ax=sc.axes)
+                                else:
+                                        b=sns.countplot(x=self.df[self.df.columns[self.item.column()]],ax=sc.axes)
+                                        b.tick_params(labelsize=6)
+                                        b.set_xticklabels(b.get_xticklabels(), rotation=45, horizontalalignment='right')
 
                                 # Create toolbar, passing canvas as first parament, parent (self, the MainWindow) as second.
                                 layout = QtWidgets.QVBoxLayout()
@@ -354,8 +367,8 @@ def getNull(dataframe):
                                 else:sums[column] += 1
         return sums
 
-
-
+def uniqueValues(df,dfColumn):
+        return df[dfColumn].unique()
 app = QtWidgets.QApplication(sys.argv)
 window = Ui()
 app.exec_()

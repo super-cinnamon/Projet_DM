@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>900</width>
+    <width>949</width>
     <height>700</height>
    </rect>
   </property>
@@ -27,8 +27,8 @@
    <widget class="QPushButton" name="upload_button">
     <property name="geometry">
      <rect>
-      <x>760</x>
-      <y>610</y>
+      <x>820</x>
+      <y>620</y>
       <width>121</width>
       <height>31</height>
      </rect>
@@ -40,10 +40,10 @@
    <widget class="QPushButton" name="save_button">
     <property name="geometry">
      <rect>
-      <x>439</x>
-      <y>390</y>
-      <width>141</width>
-      <height>24</height>
+      <x>690</x>
+      <y>620</y>
+      <width>121</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
@@ -55,116 +55,21 @@
      <rect>
       <x>580</x>
       <y>30</y>
-      <width>311</width>
+      <width>361</width>
       <height>51</height>
      </rect>
     </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="column_info">
-    <property name="geometry">
-     <rect>
-      <x>580</x>
-      <y>110</y>
-      <width>311</width>
-      <height>261</height>
-     </rect>
+    <property name="styleSheet">
+     <string notr="true">border-width:2px;
+border-radius:10px;
+border-width:0.5px;
+border-style:outset;
+border-color: rgb(148, 88, 122);
+font: 350 10pt &quot;Bahnschrift SemiLight&quot;;
+background-color: rgb(255, 255, 255);</string>
     </property>
     <property name="text">
      <string/>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="boxplot_radio">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>430</y>
-      <width>91</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Boxplot</string>
-    </property>
-    <property name="checkable">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="histogramme_radio">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>460</y>
-      <width>91</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>histogramme</string>
-    </property>
-   </widget>
-   <widget class="QWidget" name="widget" native="true">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>390</y>
-      <width>361</width>
-      <height>261</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="draw">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>610</y>
-      <width>80</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Draw graph</string>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="scatter_radio">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>490</y>
-      <width>82</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Scatter Plot</string>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="scatter_column1">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>520</y>
-      <width>141</width>
-      <height>22</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="scatter_column2">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>550</y>
-      <width>141</width>
-      <height>22</height>
-     </rect>
     </property>
    </widget>
    <widget class="QLabel" name="correlation_label">
@@ -180,13 +85,208 @@
      <string/>
     </property>
    </widget>
+   <widget class="QLabel" name="info_label">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>0</y>
+      <width>241</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 700 14pt &quot;Tw Cen MT&quot;;
+color: rgb(0, 0, 0);</string>
+    </property>
+    <property name="text">
+     <string>Information about the dataset</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>90</y>
+      <width>241</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(0, 0, 0);
+font: 700 14pt &quot;Tw Cen MT&quot;;</string>
+    </property>
+    <property name="text">
+     <string>Information about the column</string>
+    </property>
+   </widget>
+   <widget class="QPlainTextEdit" name="column_info">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>120</y>
+      <width>361</width>
+      <height>251</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-width:2px;
+border-radius:10px;
+border-width:0.5px;
+border-style:outset;
+border-color: rgb(148, 88, 122);
+background-color: rgb(255, 255, 255);
+font: 350 10pt &quot;Bahnschrift SemiLight&quot;;</string>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+    <property name="centerOnScroll">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="logo_label">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>600</y>
+      <width>91</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>mine_data_logo.png</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QTabWidget" name="tabWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>380</y>
+      <width>931</width>
+      <height>231</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <widget class="QWidget" name="partie1">
+     <attribute name="title">
+      <string>Partie 1</string>
+     </attribute>
+     <widget class="QRadioButton" name="boxplot_radio">
+      <property name="geometry">
+       <rect>
+        <x>680</x>
+        <y>10</y>
+        <width>91</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Boxplot</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QWidget" name="widget" native="true">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>-20</y>
+        <width>321</width>
+        <height>241</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="histogramme_radio">
+      <property name="geometry">
+       <rect>
+        <x>680</x>
+        <y>40</y>
+        <width>91</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>histogramme</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="scatter_radio">
+      <property name="geometry">
+       <rect>
+        <x>680</x>
+        <y>70</y>
+        <width>82</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Scatter Plot</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="scatter_column1">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>680</x>
+        <y>120</y>
+        <width>141</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="scatter_column2">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>680</x>
+        <y>90</y>
+        <width>141</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="draw">
+      <property name="geometry">
+       <rect>
+        <x>700</x>
+        <y>150</y>
+        <width>91</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Draw graph</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="partie2">
+     <attribute name="title">
+      <string>Partie 2</string>
+     </attribute>
+    </widget>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>900</width>
+     <width>949</width>
      <height>21</height>
     </rect>
    </property>
