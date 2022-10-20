@@ -175,11 +175,11 @@ class Ui(QtWidgets.QMainWindow):
                         if self.histoplot_button.isChecked():
                                 sc = MplCanvas(self.frame, width=4, height=4, dpi=100)
                                 if(self.df.dtypes[self.df.columns[self.item.column()]]!='object'):
-                                        sns.distplot(self.df[self.df.columns[self.item.column()]],ax=sc.axes)
+                                        sns.distplot(self.df[self.df.columns[self.item.column()]],ax=sc.axes,kde=True)
                                 else:
                                         b=sns.countplot(x=self.df[self.df.columns[self.item.column()]],ax=sc.axes)
                                         b.tick_params(labelsize=6)
-                                        b.set_xticklabels(b.get_xticklabels(), rotation=45, horizontalalignment='right')
+                                        b.set_xticklabels(b.get_xticklabels(), rotation=30, horizontalalignment='right')
 
                                 # Create toolbar, passing canvas as first parament, parent (self, the MainWindow) as second.
                                 layout = QtWidgets.QVBoxLayout()
@@ -374,6 +374,7 @@ def getNull(dataframe):
 
 def uniqueValues(df,dfColumn):
         return df[dfColumn].unique()
+        
 app = QtWidgets.QApplication(sys.argv)
 window = Ui()
 app.exec_()
