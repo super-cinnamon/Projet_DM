@@ -23,7 +23,7 @@ class MplCanvas(FigureCanvasQTAgg):
 class Ui(QtWidgets.QMainWindow):
         def __init__(self):
                 super(Ui, self).__init__()
-                self.setWindowIcon(QtGui.QIcon('mine_data_logo.png'))
+                self.setWindowIcon(QtGui.QIcon('pick_logo.png'))
                 self.setIconSize(QtCore.QSize(200,180))
                 self.setWindowTitle("MineData")
                 uic.loadUi('PROJET_DM.ui', self)
