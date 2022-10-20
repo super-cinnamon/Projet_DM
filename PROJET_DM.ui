@@ -72,19 +72,6 @@ background-color: rgb(255, 255, 255);</string>
      <string/>
     </property>
    </widget>
-   <widget class="QLabel" name="correlation_label">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>585</y>
-      <width>141</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
    <widget class="QLabel" name="info_label">
     <property name="geometry">
      <rect>
@@ -245,7 +232,7 @@ font: 350 10pt &quot;Bahnschrift SemiLight&quot;;</string>
       <property name="geometry">
        <rect>
         <x>540</x>
-        <y>160</y>
+        <y>190</y>
         <width>91</width>
         <height>31</height>
        </rect>
@@ -271,6 +258,19 @@ font: 350 10pt &quot;Bahnschrift SemiLight&quot;;</string>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="correlation_label">
+      <property name="geometry">
+       <rect>
+        <x>540</x>
+        <y>160</y>
+        <width>141</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
       </property>
      </widget>
     </widget>
