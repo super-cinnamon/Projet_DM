@@ -62,6 +62,7 @@ class Ui(QtWidgets.QMainWindow):
                 self.correlation= self.findChild(QtWidgets.QLabel,'correlation_label')
 
                 self.pandasTv=self.findChild(QtWidgets.QTableView,'pandasTv')
+                self.pandasTv.setStyleSheet("QTableView {background-color:rgb(16, 5, 44);}")
                 self.pandasTv.setSortingEnabled(True)
                 self.show()
 
@@ -76,6 +77,7 @@ class Ui(QtWidgets.QMainWindow):
                 self.pandasTv_model = PandasModel(self.df)
                 self.dataset_info.setText(info)
                 self.pandasTv.setModel(self.pandasTv_model)
+                self.pandasTv.setStyleSheet("QTableView {background-color:rgb(99,78,163); color:white; gridline-color: black; border-color: rgb(242, 128, 133); font:350 11px 'Bahnschrift SemiLight';} QHeaderView::section {background-color: rgb(63, 50, 105);color: white;height: 35px;width: 45px; font:350 11px 'Bahnschrift SemiLight';} QTableCornerButton::section {background-color: rgb(63, 50, 105); color: rgb(200, 200, 200);}")
                 self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
                 if self.path != ('',''):
                         print(self.path[0])

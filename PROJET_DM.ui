@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(16, 5, 44);
+background-color: rgb(51, 23, 84);</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QTableView" name="pandasTv">
     <property name="geometry">
@@ -23,6 +27,9 @@
       <height>361</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
    </widget>
    <widget class="QPushButton" name="upload_button">
     <property name="geometry">
@@ -32,6 +39,9 @@
       <width>121</width>
       <height>31</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color:rgb(255, 147, 203)</string>
     </property>
     <property name="text">
      <string>upload</string>
@@ -45,6 +55,9 @@
       <width>121</width>
       <height>31</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color:rgb(255, 147, 203)</string>
     </property>
     <property name="text">
      <string>save</string>
@@ -62,7 +75,7 @@
     <property name="styleSheet">
      <string notr="true">border-width:2px;
 border-radius:10px;
-border-width:0.5px;
+border-width:2px;
 border-style:outset;
 border-color: rgb(148, 88, 122);
 font: 350 10pt &quot;Bahnschrift SemiLight&quot;;
@@ -75,15 +88,15 @@ background-color: rgb(255, 255, 255);</string>
    <widget class="QLabel" name="info_label">
     <property name="geometry">
      <rect>
-      <x>640</x>
-      <y>0</y>
+      <x>650</x>
+      <y>10</y>
       <width>241</width>
       <height>20</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">font: 700 14pt &quot;Tw Cen MT&quot;;
-color: rgb(0, 0, 0);</string>
+     <string notr="true">font: 600 13pt &quot;Bahnschrift SemiBold&quot;;
+color: rgb(255, 105, 185);</string>
     </property>
     <property name="text">
      <string>Information about the dataset</string>
@@ -92,15 +105,15 @@ color: rgb(0, 0, 0);</string>
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>640</x>
-      <y>90</y>
+      <x>650</x>
+      <y>100</y>
       <width>241</width>
       <height>20</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">color: rgb(0, 0, 0);
-font: 700 14pt &quot;Tw Cen MT&quot;;</string>
+     <string notr="true">font: 600 13pt &quot;Bahnschrift SemiBold&quot;;
+color: rgb(255, 105, 185);</string>
     </property>
     <property name="text">
      <string>Information about the column</string>
@@ -121,7 +134,7 @@ font: 700 14pt &quot;Tw Cen MT&quot;;</string>
     <property name="styleSheet">
      <string notr="true">border-width:2px;
 border-radius:10px;
-border-width:0.5px;
+border-width:2px;
 border-style:outset;
 border-color: rgb(148, 88, 122);
 background-color: rgb(255, 255, 255);
@@ -159,6 +172,9 @@ font: 350 10pt &quot;Bahnschrift SemiLight&quot;;</string>
         <height>22</height>
        </rect>
       </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);</string>
+      </property>
       <property name="text">
        <string>Boxplot</string>
       </property>
@@ -185,6 +201,9 @@ font: 350 10pt &quot;Bahnschrift SemiLight&quot;;</string>
         <height>22</height>
        </rect>
       </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);</string>
+      </property>
       <property name="text">
        <string>histogramme</string>
       </property>
@@ -197,6 +216,9 @@ font: 350 10pt &quot;Bahnschrift SemiLight&quot;;</string>
         <width>82</width>
         <height>17</height>
        </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);</string>
       </property>
       <property name="text">
        <string>Scatter Plot</string>
@@ -214,6 +236,9 @@ font: 350 10pt &quot;Bahnschrift SemiLight&quot;;</string>
         <height>22</height>
        </rect>
       </property>
+      <property name="styleSheet">
+       <string notr="true">background-color:rgb(255, 147, 203)</string>
+      </property>
      </widget>
      <widget class="QComboBox" name="scatter_column2">
       <property name="enabled">
@@ -227,6 +252,9 @@ font: 350 10pt &quot;Bahnschrift SemiLight&quot;;</string>
         <height>22</height>
        </rect>
       </property>
+      <property name="styleSheet">
+       <string notr="true">background-color:rgb(255, 147, 203)</string>
+      </property>
      </widget>
      <widget class="QPushButton" name="draw">
       <property name="geometry">
@@ -236,6 +264,9 @@ font: 350 10pt &quot;Bahnschrift SemiLight&quot;;</string>
         <width>91</width>
         <height>31</height>
        </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color:rgb(255, 147, 203)</string>
       </property>
       <property name="text">
        <string>Draw graph</string>
@@ -268,6 +299,9 @@ font: 350 10pt &quot;Bahnschrift SemiLight&quot;;</string>
         <width>141</width>
         <height>21</height>
        </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color:white</string>
       </property>
       <property name="text">
        <string/>
