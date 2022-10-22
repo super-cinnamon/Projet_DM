@@ -61,6 +61,8 @@ class Ui(QtWidgets.QMainWindow):
                 self.column_info= self.findChild(QtWidgets.QPlainTextEdit,'column_info')
                 self.correlation= self.findChild(QtWidgets.QLabel,'correlation_label')
 
+                self.tabs=self.findChild(QtWidgets.QTabWidget,"tabwidget")
+
                 self.pandasTv=self.findChild(QtWidgets.QTableView,'pandasTv')
                 self.pandasTv.setStyleSheet("QTableView {background-color:rgb(16, 5, 44);}")
                 self.pandasTv.setSortingEnabled(True)
