@@ -41,9 +41,18 @@ background-color: rgb(51, 23, 84);</string>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color:rgb(255, 147, 203);
-border-radius:10px;
-border-style:outset;</string>
+     <string notr="true">QPushButton{
+	background-color:rgb(255, 147, 203);
+	border-radius:10px;
+	border-style:outset;
+}
+QPushButton:hover {
+            background-color: rgb(246, 252, 126);
+        }
+QPushButton:focus {
+            background-color: rgb(90, 71, 173);
+        }
+</string>
     </property>
     <property name="text">
      <string>upload</string>
@@ -59,9 +68,18 @@ border-style:outset;</string>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color:rgb(255, 147, 203);
-border-radius:10px;
-border-style:outset;</string>
+     <string notr="true">QPushButton{
+	background-color:rgb(255, 147, 203);
+	border-radius:10px;
+	border-style:outset;
+}
+QPushButton:hover {
+            background-color: rgb(246, 252, 126);
+        }
+QPushButton:focus {
+            background-color: rgb(90, 71, 173);
+        }
+</string>
     </property>
     <property name="text">
      <string>save</string>
@@ -336,9 +354,18 @@ QTabBar::tab:only-one {
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color:rgb(255, 147, 203);
-border-radius:10px;
-border-style:outset;</string>
+       <string notr="true">QPushButton{
+	background-color:rgb(255, 147, 203);
+	border-radius:10px;
+	border-style:outset;
+}
+QPushButton:hover {
+            background-color: rgb(246, 252, 126);
+        }
+QPushButton:focus {
+            background-color: rgb(90, 71, 173);
+        }
+</string>
       </property>
       <property name="text">
        <string>Draw graph</string>
