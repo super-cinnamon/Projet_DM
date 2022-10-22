@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>MineData</class>
+ <widget class="QMainWindow" name="MineData">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -187,9 +187,12 @@ border-style:outset;
 }
 QTabWidget::pane { /* The tab widget frame */
     border-top: 2px solid rgb(16, 5, 44);
-border-left: 2px solid rgb(16, 5, 44);
-border-right: 2px solid rgb(16, 5, 44);
-border-bottom: 2px solid rgb(16, 5, 44);
+	border-left: 2px solid rgb(16, 5, 44);
+	border-right: 2px solid rgb(16, 5, 44);
+	border-bottom: 2px solid rgb(16, 5, 44);	
+	border-width:2px;
+	border-style:outset;
+	border-radius:12px;
 }
 
 QTabWidget::tab-bar {
@@ -325,7 +328,9 @@ QTabBar::tab:only-one {
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color:rgb(255, 147, 203)</string>
+       <string notr="true">background-color:rgb(255, 147, 203);
+	border-radius:10px;
+	border-style:outset;</string>
       </property>
      </widget>
      <widget class="QComboBox" name="scatter_column2">
@@ -341,7 +346,9 @@ QTabBar::tab:only-one {
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color:rgb(255, 147, 203)</string>
+       <string notr="true">background-color:rgb(255, 147, 203);
+	border-radius:10px;
+	border-style:outset;</string>
       </property>
      </widget>
      <widget class="QPushButton" name="draw">
