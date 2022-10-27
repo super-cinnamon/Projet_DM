@@ -582,6 +582,11 @@ color: rgb(51, 23, 84);</string>
       </item>
       <item>
        <property name="text">
+        <string>Null</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>Mode</string>
        </property>
       </item>
