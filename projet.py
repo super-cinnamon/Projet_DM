@@ -87,6 +87,8 @@ class Ui(QtWidgets.QMainWindow):
 
         def SaveClickListener(self):
                 try:
+                        dialog = QtWidgets.QFileDialog()
+                        self.path = dialog.getSaveFileName(self,"Save File","","CSV data files (*.csv)")
                         self.df.to_csv(self.path[0], index=False)
                         self.df = pd.read_csv(self.path[0])
                         info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
