@@ -865,7 +865,7 @@ def treat_outliers(dataframe, df_column, method):
         for i in range(len(df_column)):
                 if df_column.iloc[i] in outliers : 
                         if method == "Delete":
-                                df=df.drop([i])
+                                df=df.drop([i],axis=0)
                         elif method == "Null":
                                 df_column.iloc[i] = np.nan
                         elif method == "Mode":
@@ -878,6 +878,7 @@ def treat_outliers(dataframe, df_column, method):
                                 df_column.iloc[i] = median(df_column)
                                 
                         else: print("la methode choisie est invalide")
+        df=df.reset_index(drop=True)
         df[df_column.name] = df_column
 
         return df
