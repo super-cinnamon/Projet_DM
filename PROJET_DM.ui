@@ -249,7 +249,7 @@ QTabBar::tab:only-one {
 }</string>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="partie1">
      <attribute name="title">
@@ -481,7 +481,7 @@ color: rgb(255, 105, 185);</string>
      <widget class="QLabel" name="label_3">
       <property name="geometry">
        <rect>
-        <x>300</x>
+        <x>310</x>
         <y>10</y>
         <width>101</width>
         <height>16</height>
@@ -694,81 +694,23 @@ color: rgb(255, 105, 185);</string>
      <widget class="QSpinBox" name="Q_value">
       <property name="geometry">
        <rect>
-        <x>250</x>
+        <x>300</x>
         <y>70</y>
-        <width>81</width>
+        <width>101</width>
         <height>25</height>
        </rect>
       </property>
-     </widget>
-     <widget class="QComboBox" name="comboBox">
-      <property name="geometry">
-       <rect>
-        <x>340</x>
-        <y>70</y>
-        <width>111</width>
-        <height>24</height>
-       </rect>
-      </property>
       <property name="styleSheet">
        <string notr="true">background-color:rgb(255, 147, 203);
-	border-radius:10px;
-	border-style:outset;
 color: rgb(51, 23, 84);</string>
       </property>
-      <item>
-       <property name="text">
-        <string>Mode</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Median</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Mean</string>
-       </property>
-      </item>
-     </widget>
-     <widget class="QComboBox" name="comboBox_2">
-      <property name="geometry">
-       <rect>
-        <x>340</x>
-        <y>160</y>
-        <width>111</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color:rgb(255, 147, 203);
-	border-radius:10px;
-	border-style:outset;
-color: rgb(51, 23, 84);</string>
-      </property>
-      <item>
-       <property name="text">
-        <string>Mode</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Median</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Mean</string>
-       </property>
-      </item>
      </widget>
      <widget class="QPushButton" name="discretize_frequency">
       <property name="geometry">
        <rect>
         <x>290</x>
         <y>100</y>
-        <width>101</width>
+        <width>121</width>
         <height>24</height>
        </rect>
       </property>
@@ -794,9 +736,9 @@ QPushButton:focus {
      <widget class="QPushButton" name="discretize_width">
       <property name="geometry">
        <rect>
-        <x>300</x>
+        <x>290</x>
         <y>190</y>
-        <width>91</width>
+        <width>121</width>
         <height>24</height>
        </rect>
       </property>
@@ -822,7 +764,7 @@ QPushButton:focus {
      <widget class="QLabel" name="label_8">
       <property name="geometry">
        <rect>
-        <x>290</x>
+        <x>300</x>
         <y>50</y>
         <width>121</width>
         <height>16</height>
@@ -856,14 +798,18 @@ color: rgb(255, 105, 185);</string>
      <widget class="QSpinBox" name="K_value">
       <property name="geometry">
        <rect>
-        <x>250</x>
+        <x>300</x>
         <y>160</y>
-        <width>81</width>
+        <width>101</width>
         <height>25</height>
        </rect>
       </property>
+      <property name="styleSheet">
+       <string notr="true">background-color:rgb(255, 147, 203);
+color: rgb(51, 23, 84);</string>
+      </property>
      </widget>
-     <widget class="QPushButton" name="eliminate_rows">
+     <widget class="QPushButton" name="del_row">
       <property name="geometry">
        <rect>
         <x>500</x>
@@ -888,14 +834,14 @@ QPushButton:focus {
 </string>
       </property>
       <property name="text">
-       <string>Delete Horizontal Redundancy</string>
+       <string>Delete Row</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QPushButton" name="eliminate_col">
       <property name="geometry">
        <rect>
         <x>500</x>
-        <y>150</y>
+        <y>190</y>
         <width>181</width>
         <height>24</height>
        </rect>
@@ -928,6 +874,13 @@ QPushButton:focus {
         <height>25</height>
        </rect>
       </property>
+      <property name="styleSheet">
+       <string notr="true">background-color:rgb(255, 147, 203);
+color: rgb(51, 23, 84);</string>
+      </property>
+      <property name="minimum">
+       <number>-99</number>
+      </property>
      </widget>
      <widget class="QSpinBox" name="max_value">
       <property name="geometry">
@@ -937,6 +890,13 @@ QPushButton:focus {
         <width>91</width>
         <height>25</height>
        </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color:rgb(255, 147, 203);
+color: rgb(51, 23, 84);</string>
+      </property>
+      <property name="minimum">
+       <number>-99</number>
       </property>
       <property name="value">
        <number>1</number>
@@ -996,19 +956,6 @@ QPushButton:focus {
       </property>
       <property name="text">
        <string>Normalize z-score</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_10">
-      <property name="geometry">
-       <rect>
-        <x>560</x>
-        <y>50</y>
-        <width>49</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
       </property>
      </widget>
      <widget class="QLabel" name="label_11">
@@ -1092,6 +1039,96 @@ color: rgb(51, 23, 84);</string>
 	border-radius:10px;
 	border-style:outset;
 color: rgb(51, 23, 84);</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="del_col">
+      <property name="geometry">
+       <rect>
+        <x>500</x>
+        <y>100</y>
+        <width>181</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton{
+	background-color:rgb(255, 147, 203);
+	border-radius:10px;
+	border-style:outset;
+color: rgb(51, 23, 84);
+}
+QPushButton:hover {
+            background-color: rgb(246, 252, 126);
+        }
+QPushButton:focus {
+            background-color: rgb(90, 71, 173);
+        }
+</string>
+      </property>
+      <property name="text">
+       <string>Delete Column</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="eliminate_row">
+      <property name="geometry">
+       <rect>
+        <x>500</x>
+        <y>160</y>
+        <width>181</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton{
+	background-color:rgb(255, 147, 203);
+	border-radius:10px;
+	border-style:outset;
+color: rgb(51, 23, 84);
+}
+QPushButton:hover {
+            background-color: rgb(246, 252, 126);
+        }
+QPushButton:focus {
+            background-color: rgb(90, 71, 173);
+        }
+</string>
+      </property>
+      <property name="text">
+       <string>Delete Horizontal Redundancy</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_10">
+      <property name="geometry">
+       <rect>
+        <x>570</x>
+        <y>50</y>
+        <width>51</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 600 11pt &quot;Bahnschrift SemiBold&quot;;
+color: rgb(255, 105, 185);</string>
+      </property>
+      <property name="text">
+       <string>Manual</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_14">
+      <property name="geometry">
+       <rect>
+        <x>560</x>
+        <y>140</y>
+        <width>71</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 600 11pt &quot;Bahnschrift SemiBold&quot;;
+color: rgb(255, 105, 185);</string>
+      </property>
+      <property name="text">
+       <string>Automatic</string>
       </property>
      </widget>
     </widget>
