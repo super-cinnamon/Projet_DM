@@ -249,7 +249,7 @@ QTabBar::tab:only-one {
 }</string>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="partie1">
      <attribute name="title">
@@ -703,6 +703,9 @@ color: rgb(255, 105, 185);</string>
       <property name="styleSheet">
        <string notr="true">background-color:rgb(255, 147, 203);
 color: rgb(51, 23, 84);</string>
+      </property>
+      <property name="minimum">
+       <number>1</number>
       </property>
      </widget>
      <widget class="QPushButton" name="discretize_frequency">

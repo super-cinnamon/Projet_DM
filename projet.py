@@ -1,5 +1,3 @@
-from time import sleep
-from turtle import done
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -50,9 +48,9 @@ class Second(QtWidgets.QDialog):
                         self.col_combo.clear()
                         self.col_combo.addItems(self.columns)
                 else:
-                        ctypes.windll.user32.MessageBoxW(0, "List empty, press OK.", "", 0)
+                        ctypes.windll.user32.MessageBoxW(0, "List empty, press OK to proceed.", "", 0)
         def Okay(self):
-                if len(self.columns)==0:
+                if len(self.methods)!=0:
                         global table_discret
                         if(self.type=='K'):
                                 valeurs_discret=[]
@@ -70,7 +68,7 @@ class Second(QtWidgets.QDialog):
                                 table_discret=pd.DataFrame(valeurs_discret,col)
                         self.close()
                 else:
-                        ctypes.windll.user32.MessageBoxW(0, "List not empty yet, please choose a method for each column first.", "", 0)
+                        ctypes.windll.user32.MessageBoxW(0, "No column added, please add at least one column.", "", 0)
 
 
         def Cancel(self):
@@ -229,45 +227,51 @@ class Ui(QtWidgets.QMainWindow):
 
 
         def discretizeK(self):
-                data_num=[]
-                for col in self.df.columns:
-                        if self.df[col].dtype != 'object':
-                                data_num.append(col)
-                self.second=Second(self.df,data_num,self.K_spin.value(),"K")
-                self.second.setModal(True)
-                self.second.setAttribute(QtCore.Qt.WA_DeleteOnClose)                
-                self.second.exec()
                 try:
+                        data_num=[]
+                        for col in self.df.columns:
+                                if self.df[col].dtype != 'object':
+                                        data_num.append(col)
+                        self.second=Second(self.df,data_num,self.K_spin.value(),"K")
+                        self.second.setModal(True)
+                        self.second.setAttribute(QtCore.Qt.WA_DeleteOnClose)                
+                        self.second.exec()
+                        try:
 
-                        self.df=table_discret.T
-                        self.pandasTv_model = PandasModel(self.df)
-                        info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
-                        self.dataset_info.setText(info)
-                        self.pandasTv.setModel(self.pandasTv_model)
-                        self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
+                                self.df=table_discret.T
+                                self.pandasTv_model = PandasModel(self.df)
+                                info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
+                                self.dataset_info.setText(info)
+                                self.pandasTv.setModel(self.pandasTv_model)
+                                self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
+                        except:
+                                ctypes.windll.user32.MessageBoxW(0, "Discretization was cancelled.", "Message", 0)
                 except:
-                        ctypes.windll.user32.MessageBoxW(0, "Discretization was cancelled.", "Message", 0)
+                        ctypes.windll.user32.MessageBoxW(0, "No dataset loaded.", "Error!", 0)
 
 
         def discretizeQ(self):
-                data_num=[]
-                for col in self.df.columns:
-                        if self.df[col].dtype != 'object':
-                                data_num.append(col)
-                self.second=Second(self.df,data_num,self.Q_spin.value(),"Q")
-                self.second.setModal(True)
-                self.second.setAttribute(QtCore.Qt.WA_DeleteOnClose)                
-                self.second.exec()
-                try:
+                try:                                
+                        data_num=[]
+                        for col in self.df.columns:
+                                if self.df[col].dtype != 'object':
+                                        data_num.append(col)
+                        self.second=Second(self.df,data_num,self.Q_spin.value(),"Q")
+                        self.second.setModal(True)
+                        self.second.setAttribute(QtCore.Qt.WA_DeleteOnClose)                
+                        self.second.exec()
+                        try:
 
-                        self.df=table_discret.T
-                        self.pandasTv_model = PandasModel(self.df)
-                        info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
-                        self.dataset_info.setText(info)
-                        self.pandasTv.setModel(self.pandasTv_model)
-                        self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
+                                self.df=table_discret.T
+                                self.pandasTv_model = PandasModel(self.df)
+                                info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
+                                self.dataset_info.setText(info)
+                                self.pandasTv.setModel(self.pandasTv_model)
+                                self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
+                        except:
+                                ctypes.windll.user32.MessageBoxW(0, "Discretization was cancelled.", "Message", 0)
                 except:
-                        ctypes.windll.user32.MessageBoxW(0, "Discretization was cancelled.", "Message", 0)
+                        ctypes.windll.user32.MessageBoxW(0, "No dataset loaded.", "Error!", 0)
 
 
 
@@ -439,170 +443,189 @@ class Ui(QtWidgets.QMainWindow):
                         except: print("")
         
         def ReplaceNull(self):
-                self.df[self.replace_null_column.currentText()]=replace_missing(self.df[self.replace_null_column.currentText()],self.replace_null_combo.currentText())
-                self.pandasTv_model = PandasModel(self.df)
-                info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
-                self.dataset_info.setText(info)
-                if  self.df[self.replace_null_column.currentText()].dtype=='object':
-                        info="Column name: "+str(self.replace_null_column.currentText())+"\nColumn type: "+str(self.df[self.replace_null_column.currentText()].dtype)+"\nUnique Values : "+str(set(uniqueValues(self.df,self.df.columns[self.replace_null_column.currentText()])))+"\nNumber of missing values: "+str(self.df[self.replace_null_column].isnull().sum().values[0])
-                        print(info)
-                        #print("unique"+str(self.df[[self.df.columns[item.column()]]].unique()))
-                        self.column_info.clear()
-                        self.column_info.insertPlainText(info)
-                else:
-                        td=tendanceCentrale(self.df[self.replace_null_column.currentText()])
-                        dis=dispersion(self.df[self.replace_null_column.currentText()])
-                        q=dis[0][4]
-                        if len(dis[1])!=0:
-                                outliers=str(dis[1])
+                try:
+
+                        self.df[self.replace_null_column.currentText()]=replace_missing(self.df[self.replace_null_column.currentText()],self.replace_null_combo.currentText())
+                        self.pandasTv_model = PandasModel(self.df)
+                        info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
+                        self.dataset_info.setText(info)
+                        if  self.df[self.replace_null_column.currentText()].dtype=='object':
+                                info="Column name: "+str(self.replace_null_column.currentText())+"\nColumn type: "+str(self.df[self.replace_null_column.currentText()].dtype)+"\nUnique Values : "+str(set(uniqueValues(self.df,self.df.columns[self.replace_null_column.currentText()])))+"\nNumber of missing values: "+str(self.df[self.replace_null_column].isnull().sum().values[0])
+                                print(info)
+                                #print("unique"+str(self.df[[self.df.columns[item.column()]]].unique()))
+                                self.column_info.clear()
+                                self.column_info.insertPlainText(info)
                         else:
-                                outliers="no outliers"
-                        info="Column name: "+str(self.replace_null_column.currentText())+"\nColumn type: "+str(self.df[self.replace_null_column.currentText()].dtype)+"\nMean: "+str(td['mean'])+"\nMedian: "+str(td['median'])+"\nMode: "+str(td['mode'])+"\nSymmetry: "+td['symetrie']+"\nEcart type: "+str(dis[0][0])+"\nVariance: "+str(dis[0][1])+"\nMin: "+str(dis[0][3])+"\nQ1: "+str(q[0])+"\nQ3: "+str(q[1])+"\nMax: "+str(dis[0][5])+"\nIQR: "+str(dis[0][2])+"\nOutliers: "+outliers+"\nNumber of missing values: "+str(self.df[self.replace_null_column.currentText()].isnull().sum())
-                        #print(info)
-                        self.column_info.clear()
-                        self.column_info.insertPlainText(info)
-                self.pandasTv.setModel(self.pandasTv_model)
-                self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
-                columns = list(self.df.columns)
-                self.replace_null_column.clear()
-                self.replace_null_column.addItems(columns)
-                self.replace_outlier_column.clear()
-                self.replace_outlier_column.addItems(columns)
+                                td=tendanceCentrale(self.df[self.replace_null_column.currentText()])
+                                dis=dispersion(self.df[self.replace_null_column.currentText()])
+                                q=dis[0][4]
+                                if len(dis[1])!=0:
+                                        outliers=str(dis[1])
+                                else:
+                                        outliers="no outliers"
+                                info="Column name: "+str(self.replace_null_column.currentText())+"\nColumn type: "+str(self.df[self.replace_null_column.currentText()].dtype)+"\nMean: "+str(td['mean'])+"\nMedian: "+str(td['median'])+"\nMode: "+str(td['mode'])+"\nSymmetry: "+td['symetrie']+"\nEcart type: "+str(dis[0][0])+"\nVariance: "+str(dis[0][1])+"\nMin: "+str(dis[0][3])+"\nQ1: "+str(q[0])+"\nQ3: "+str(q[1])+"\nMax: "+str(dis[0][5])+"\nIQR: "+str(dis[0][2])+"\nOutliers: "+outliers+"\nNumber of missing values: "+str(self.df[self.replace_null_column.currentText()].isnull().sum())
+                                #print(info)
+                                self.column_info.clear()
+                                self.column_info.insertPlainText(info)
+                        self.pandasTv.setModel(self.pandasTv_model)
+                        self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
+                        columns = list(self.df.columns)
+                        self.replace_null_column.clear()
+                        self.replace_null_column.addItems(columns)
+                        self.replace_outlier_column.clear()
+                        self.replace_outlier_column.addItems(columns)
+                except:
+                        ctypes.windll.user32.MessageBoxW(0, "No dataset loaded.", "Error!", 0)
 
 
         def ReplaceOutlier(self):
-                self.df=treat_outliers(self.df,self.df[self.replace_outlier_column.currentText()],self.replace_outlier_combo.currentText())
-                self.pandasTv_model = PandasModel(self.df)
-                info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
-                self.dataset_info.setText(info)
-                if  self.df[self.replace_outlier_column.currentText()].dtype=='object':
-                        info="Column name: "+str(self.replace_outlier_column.currentText())+"\nColumn type: "+str(self.df[self.replace_outlier_column.currentText()].dtype)+"\nUnique Values : "+str(set(uniqueValues(self.df,self.df.columns[self.replace_outlier_column.currentText()])))+"\nNumber of missing values: "+str(self.df[self.replace_outlier_column].isnull().sum().values[0])
-                        print(info)
-                        #print("unique"+str(self.df[[self.df.columns[item.column()]]].unique()))
-                        self.column_info.clear()
-                        self.column_info.insertPlainText(info)
-                else:
-                        td=tendanceCentrale(self.df[self.replace_outlier_column.currentText()])
-                        dis=dispersion(self.df[self.replace_outlier_column.currentText()])
-                        q=dis[0][4]
-                        if len(dis[1])!=0:
-                                outliers=str(dis[1])
+                try:
+
+                        self.df=treat_outliers(self.df,self.df[self.replace_outlier_column.currentText()],self.replace_outlier_combo.currentText())
+                        self.pandasTv_model = PandasModel(self.df)
+                        info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
+                        self.dataset_info.setText(info)
+                        if  self.df[self.replace_outlier_column.currentText()].dtype=='object':
+                                info="Column name: "+str(self.replace_outlier_column.currentText())+"\nColumn type: "+str(self.df[self.replace_outlier_column.currentText()].dtype)+"\nUnique Values : "+str(set(uniqueValues(self.df,self.df.columns[self.replace_outlier_column.currentText()])))+"\nNumber of missing values: "+str(self.df[self.replace_outlier_column].isnull().sum().values[0])
+                                print(info)
+                                #print("unique"+str(self.df[[self.df.columns[item.column()]]].unique()))
+                                self.column_info.clear()
+                                self.column_info.insertPlainText(info)
                         else:
-                                outliers="no outliers"
-                        info="Column name: "+str(self.replace_outlier_column.currentText())+"\nColumn type: "+str(self.df[self.replace_outlier_column.currentText()].dtype)+"\nMean: "+str(td['mean'])+"\nMedian: "+str(td['median'])+"\nMode: "+str(td['mode'])+"\nSymmetry: "+td['symetrie']+"\nEcart type: "+str(dis[0][0])+"\nVariance: "+str(dis[0][1])+"\nMin: "+str(dis[0][3])+"\nQ1: "+str(q[0])+"\nQ3: "+str(q[1])+"\nMax: "+str(dis[0][5])+"\nIQR: "+str(dis[0][2])+"\nOutliers: "+outliers+"\nNumber of missing values: "+str(self.df[self.replace_outlier_column.currentText()].isnull().sum())
-                        #print(info)
-                        self.column_info.clear()
-                        self.column_info.insertPlainText(info)
-                self.pandasTv.setModel(self.pandasTv_model)
-                self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
-                columns = list(self.df.columns)
-                self.replace_null_column.clear()
-                self.replace_null_column.addItems(columns)
-                self.replace_outlier_column.clear()
-                self.replace_outlier_column.addItems(columns)
+                                td=tendanceCentrale(self.df[self.replace_outlier_column.currentText()])
+                                dis=dispersion(self.df[self.replace_outlier_column.currentText()])
+                                q=dis[0][4]
+                                if len(dis[1])!=0:
+                                        outliers=str(dis[1])
+                                else:
+                                        outliers="no outliers"
+                                info="Column name: "+str(self.replace_outlier_column.currentText())+"\nColumn type: "+str(self.df[self.replace_outlier_column.currentText()].dtype)+"\nMean: "+str(td['mean'])+"\nMedian: "+str(td['median'])+"\nMode: "+str(td['mode'])+"\nSymmetry: "+td['symetrie']+"\nEcart type: "+str(dis[0][0])+"\nVariance: "+str(dis[0][1])+"\nMin: "+str(dis[0][3])+"\nQ1: "+str(q[0])+"\nQ3: "+str(q[1])+"\nMax: "+str(dis[0][5])+"\nIQR: "+str(dis[0][2])+"\nOutliers: "+outliers+"\nNumber of missing values: "+str(self.df[self.replace_outlier_column.currentText()].isnull().sum())
+                                #print(info)
+                                self.column_info.clear()
+                                self.column_info.insertPlainText(info)
+                        self.pandasTv.setModel(self.pandasTv_model)
+                        self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
+                        columns = list(self.df.columns)
+                        self.replace_null_column.clear()
+                        self.replace_null_column.addItems(columns)
+                        self.replace_outlier_column.clear()
+                        self.replace_outlier_column.addItems(columns)
+                except:
+                        ctypes.windll.user32.MessageBoxW(0, "No dataset loaded.", "Error!", 0)
 
         def Normal_minmax(self):
-                self.df=min_max_normalisation(self.df,self.min_spin.value(),self.max_spin.value())
-                self.pandasTv_model = PandasModel(self.df)
-                info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
-                self.dataset_info.setText(info)
-                self.column_info.clear()
-                self.pandasTv.setModel(self.pandasTv_model)
-                self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
-                columns = list(self.df.columns)
-                self.replace_null_column.clear()
-                self.replace_null_column.addItems(columns)
-                self.replace_outlier_column.clear()
-                self.replace_outlier_column.addItems(columns)
+                try:
+
+                        self.df=min_max_normalisation(self.df,self.min_spin.value(),self.max_spin.value())
+                        self.pandasTv_model = PandasModel(self.df)
+                        info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
+                        self.dataset_info.setText(info)
+                        self.column_info.clear()
+                        self.pandasTv.setModel(self.pandasTv_model)
+                        self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
+                        columns = list(self.df.columns)
+                        self.replace_null_column.clear()
+                        self.replace_null_column.addItems(columns)
+                        self.replace_outlier_column.clear()
+                        self.replace_outlier_column.addItems(columns)
+                except:
+                        ctypes.windll.user32.MessageBoxW(0, "No dataset loaded.", "Error!", 0)
 
         def Normal_zscore(self):
-                self.df=z_score_normalisation(self.df)
-                self.pandasTv_model = PandasModel(self.df)
-                info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
-                self.dataset_info.setText(info)
-                self.column_info.clear()
-                self.pandasTv.setModel(self.pandasTv_model)
-                self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
-                columns = list(self.df.columns)
-                self.replace_null_column.clear()
-                self.replace_null_column.addItems(columns)
-                self.replace_outlier_column.clear()
-                self.replace_outlier_column.addItems(columns)
+                try:
+                        self.df=z_score_normalisation(self.df)
+                        self.pandasTv_model = PandasModel(self.df)
+                        info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
+                        self.dataset_info.setText(info)
+                        self.column_info.clear()
+                        self.pandasTv.setModel(self.pandasTv_model)
+                        self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
+                        columns = list(self.df.columns)
+                        self.replace_null_column.clear()
+                        self.replace_null_column.addItems(columns)
+                        self.replace_outlier_column.clear()
+                        self.replace_outlier_column.addItems(columns)
+                except : 
+                        ctypes.windll.user32.MessageBoxW(0, "No dataset loaded.", "Error!", 0)
 
         def Delete_Row_man(self):
-                print(self.item)
-                print(self.item.row())
-                print(self.item.column())
-                print(self.df.columns[self.item.column()])
-                print(self.df.dtypes[self.df.columns[self.item.column()]])
-                self.df=self.df.drop([self.item.row()], axis = 0)
-                self.df=self.df.reset_index(drop=True)
-                self.pandasTv_model = PandasModel(self.df)                
-                info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
-                self.dataset_info.setText(info)
-                self.column_info.clear()
-                self.pandasTv.setModel(self.pandasTv_model)
-                self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
-                columns = list(self.df.columns)
-                self.replace_null_column.clear()
-                self.replace_null_column.addItems(columns)
-                self.replace_outlier_column.clear()
-                self.replace_outlier_column.addItems(columns)
+                try:
+                        self.df=self.df.drop([self.item.row()], axis = 0)
+                        self.df=self.df.reset_index(drop=True)
+                        self.pandasTv_model = PandasModel(self.df)                
+                        info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
+                        self.dataset_info.setText(info)
+                        self.column_info.clear()
+                        self.pandasTv.setModel(self.pandasTv_model)
+                        self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
+                        columns = list(self.df.columns)
+                        self.replace_null_column.clear()
+                        self.replace_null_column.addItems(columns)
+                        self.replace_outlier_column.clear()
+                        self.replace_outlier_column.addItems(columns)
+                except:
+                        ctypes.windll.user32.MessageBoxW(0, "No dataset loaded or no row selected.", "Error!", 0)
 
         def Delete_Col_man(self):
-                print(self.item)
-                print(self.item.row())
-                print(self.item.column())
-                print(self.df.columns[self.item.column()])
-                print(self.df.dtypes[self.df.columns[self.item.column()]])
-                self.df=self.df.drop(self.df.columns[self.item.column()], axis = 1)
-                self.df=self.df.reset_index(drop=True)
-                self.pandasTv_model = PandasModel(self.df)                
-                info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
-                self.dataset_info.setText(info)
-                self.column_info.clear()
-                self.pandasTv.setModel(self.pandasTv_model)
-                self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
-                columns = list(self.df.columns)
-                self.replace_null_column.clear()
-                self.replace_null_column.addItems(columns)
-                self.replace_outlier_column.clear()
-                self.replace_outlier_column.addItems(columns)
+                try:
+                        print(self.df.dtypes[self.df.columns[self.item.column()]])
+                        self.df=self.df.drop(self.df.columns[self.item.column()], axis = 1)
+                        self.df=self.df.reset_index(drop=True)
+                        self.pandasTv_model = PandasModel(self.df)                
+                        info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
+                        self.dataset_info.setText(info)
+                        self.column_info.clear()
+                        self.pandasTv.setModel(self.pandasTv_model)
+                        self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
+                        columns = list(self.df.columns)
+                        self.replace_null_column.clear()
+                        self.replace_null_column.addItems(columns)
+                        self.replace_outlier_column.clear()
+                        self.replace_outlier_column.addItems(columns)
+                except:
+                        ctypes.windll.user32.MessageBoxW(0, "No dataset loaded or no column selected.", "Error!", 0)
 
         def auto_row(self):
-                red=detect_redundant(self.df)
-                for index,row in red[0].iterrows():
-                        self.df=Del_Row(self.df,index)
-                        self.df=self.df.reset_index(drop=True)
-                self.pandasTv_model = PandasModel(self.df)                
-                info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
-                self.dataset_info.setText(info)
-                self.column_info.clear()
-                self.pandasTv.setModel(self.pandasTv_model)
-                self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
-                columns = list(self.df.columns)
-                self.replace_null_column.clear()
-                self.replace_null_column.addItems(columns)
-                self.replace_outlier_column.clear()
-                self.replace_outlier_column.addItems(columns)
+                try:
+
+                        red=detect_redundant(self.df)
+                        for index,row in red[0].iterrows():
+                                self.df=Del_Row(self.df,index)
+                                self.df=self.df.reset_index(drop=True)
+                        self.pandasTv_model = PandasModel(self.df)                
+                        info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
+                        self.dataset_info.setText(info)
+                        self.column_info.clear()
+                        self.pandasTv.setModel(self.pandasTv_model)
+                        self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
+                        columns = list(self.df.columns)
+                        self.replace_null_column.clear()
+                        self.replace_null_column.addItems(columns)
+                        self.replace_outlier_column.clear()
+                        self.replace_outlier_column.addItems(columns)
+                except:
+                        ctypes.windll.user32.MessageBoxW(0, "No dataset loaded.", "Error!", 0)
 
 
         def auto_col(self):
-                red=detect_redundant(self.df)
-                for index in red[1]:
-                        self.df=Del_Column(self.df,index)
-                        self.df=self.df.reset_index(drop=True)
-                self.pandasTv_model = PandasModel(self.df)                
-                info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
-                self.dataset_info.setText(info)
-                self.column_info.clear()
-                self.pandasTv.setModel(self.pandasTv_model)
-                self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
-                columns = list(self.df.columns)
-                self.replace_null_column.clear()
-                self.replace_null_column.addItems(columns)
-                self.replace_outlier_column.clear()
-                self.replace_outlier_column.addItems(columns)
+                try:
+                        red=detect_redundant(self.df)
+                        for index in red[1]:
+                                self.df=Del_Column(self.df,index)
+                                self.df=self.df.reset_index(drop=True)
+                        self.pandasTv_model = PandasModel(self.df)                
+                        info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
+                        self.dataset_info.setText(info)
+                        self.column_info.clear()
+                        self.pandasTv.setModel(self.pandasTv_model)
+                        self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
+                        columns = list(self.df.columns)
+                        self.replace_null_column.clear()
+                        self.replace_null_column.addItems(columns)
+                        self.replace_outlier_column.clear()
+                        self.replace_outlier_column.addItems(columns)
+                except:
+                        ctypes.windll.user32.MessageBoxW(0, "No dataset loaded.", "Error!", 0)
 
 def discretisation_effectifs(df_column, Q, method):
         step = (len(df_column)//Q)+1
