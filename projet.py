@@ -165,7 +165,7 @@ class Ui(QtWidgets.QMainWindow):
         def UploadClickListener(self):
                 try:
 
-                        self.path = QFileDialog.getOpenFileName(self, "Import CSV", "", "CSV data files (*.csv);;Excel (*.xlsx)")
+                        self.path = QFileDialog.getOpenFileName(self, "Import CSV", "", "CSV data files (*.csv);")
                         # path = QFileDialog.getOpenFileName(self, 'Open a file', '','All Files (*.*)') # if we want all files
                         self.df = pd.read_csv(self.path[0])
                         self.loaded=True
@@ -193,7 +193,7 @@ class Ui(QtWidgets.QMainWindow):
                 try:
                         if(self.loaded==True):
                                 dialog = QtWidgets.QFileDialog()
-                                self.path = dialog.getSaveFileName(self,"Save File","","CSV data files (*.csv);;Excel (*.xlsx)")
+                                self.path = dialog.getSaveFileName(self,"Save File","","CSV data files (*.csv);")
                                 self.df.to_csv(self.path[0], index=False)
                                 self.df = pd.read_csv(self.path[0])
                                 info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
