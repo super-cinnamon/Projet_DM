@@ -26,6 +26,7 @@ class Second(QtWidgets.QDialog):
         def __init__(self,df,columns,value,dis_type):
                 super(Second, self).__init__()
                 uic.loadUi('discret_menu.ui', self)
+                self.setWindowIcon(QtGui.QIcon('pick_logo.png'))
                 self.columns=columns
                 self.value=value
                 self.type=dis_type
@@ -49,24 +50,27 @@ class Second(QtWidgets.QDialog):
                         self.col_combo.clear()
                         self.col_combo.addItems(self.columns)
                 else:
-                        print("liste vide, appuyez sur ok")
+                        ctypes.windll.user32.MessageBoxW(0, "List empty, press OK.", "", 0)
         def Okay(self):
-                global table_discret
-                if(self.type=='K'):
-                        valeurs_discret=[]
-                        col=[]
-                        for each in self.methods:
-                                col.append(each[0])
-                                valeurs_discret.append(discretisation_amplitude(self.df[each[0]],self.value,each[1]))
-                        table_discret=pd.DataFrame(valeurs_discret,col)                                  
-                elif(self.type=='Q'):
-                        valeurs_discret=[]
-                        col=[]
-                        for each in self.methods:
-                                col.append(each[0])
-                                valeurs_discret.append(discretisation_effectifs(self.df[each[0]],self.value,each[1]))
-                        table_discret=pd.DataFrame(valeurs_discret,col)
-                self.close()        
+                if len(self.columns)==0:
+                        global table_discret
+                        if(self.type=='K'):
+                                valeurs_discret=[]
+                                col=[]
+                                for each in self.methods:
+                                        col.append(each[0])
+                                        valeurs_discret.append(discretisation_amplitude(self.df[each[0]],self.value,each[1]))
+                                table_discret=pd.DataFrame(valeurs_discret,col)                                  
+                        elif(self.type=='Q'):
+                                valeurs_discret=[]
+                                col=[]
+                                for each in self.methods:
+                                        col.append(each[0])
+                                        valeurs_discret.append(discretisation_effectifs(self.df[each[0]],self.value,each[1]))
+                                table_discret=pd.DataFrame(valeurs_discret,col)
+                        self.close()
+                else:
+                        ctypes.windll.user32.MessageBoxW(0, "List not empty yet, please choose a method for each column first.", "", 0)
 
 
         def Cancel(self):
@@ -156,61 +160,72 @@ class Ui(QtWidgets.QMainWindow):
                 self.pandasTv=self.findChild(QtWidgets.QTableView,'pandasTv')
                 self.pandasTv.setStyleSheet("QTableView {background-color:rgb(16, 5, 44);}")
                 self.pandasTv.setSortingEnabled(True)
+                self.loaded=False
                 self.show()
 
 
         def UploadClickListener(self):
-                self.path = QFileDialog.getOpenFileName(self, "Import CSV", "", "CSV data files (*.csv);;Excel (*.xlsx)")
-                # path = QFileDialog.getOpenFileName(self, 'Open a file', '','All Files (*.*)') # if we want all files
-                self.df = pd.read_csv(self.path[0])
-                info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
-                print(info)
-                #self.dataset_info.setText(info)
-                self.pandasTv_model = PandasModel(self.df)
-                self.dataset_info.setText(info)
-                self.pandasTv.setModel(self.pandasTv_model)
-                self.pandasTv.setStyleSheet("QTableView {background-color:rgb(99,78,163); color:white; gridline-color: black; border-color: rgb(242, 128, 133); font:350 11px 'Bahnschrift SemiLight';} QHeaderView::section {background-color: rgb(63, 50, 105);color: white;height: 35px;width: 45px; font:350 11px 'Bahnschrift SemiLight';} QTableCornerButton::section {background-color: rgb(63, 50, 105); color: rgb(200, 200, 200);}")
-                self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
-                columns = list(self.df.columns)
-                self.replace_null_column.clear()
-                self.replace_null_column.addItems(columns)
-                self.replace_outlier_column.clear()
-                self.replace_outlier_column.addItems(columns)
-                if self.path != ('',''):
-                        print(self.path[0])
-                        return self.path[0]
+                try:
+
+                        self.path = QFileDialog.getOpenFileName(self, "Import CSV", "", "CSV data files (*.csv);;Excel (*.xlsx)")
+                        # path = QFileDialog.getOpenFileName(self, 'Open a file', '','All Files (*.*)') # if we want all files
+                        self.df = pd.read_csv(self.path[0])
+                        self.loaded=True
+                        info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
+                        print(info)
+                        #self.dataset_info.setText(info)
+                        self.pandasTv_model = PandasModel(self.df)
+                        self.dataset_info.setText(info)
+                        self.pandasTv.setModel(self.pandasTv_model)
+                        self.pandasTv.setStyleSheet("QTableView {background-color:rgb(99,78,163); color:white; gridline-color: black; border-color: rgb(242, 128, 133); font:350 11px 'Bahnschrift SemiLight';} QHeaderView::section {background-color: rgb(63, 50, 105);color: white;height: 35px;width: 45px; font:350 11px 'Bahnschrift SemiLight';} QTableCornerButton::section {background-color: rgb(63, 50, 105); color: rgb(200, 200, 200);}")
+                        self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
+                        self.column_info.clear()
+                        columns = list(self.df.columns)
+                        self.replace_null_column.clear()
+                        self.replace_null_column.addItems(columns)
+                        self.replace_outlier_column.clear()
+                        self.replace_outlier_column.addItems(columns)
+                        if self.path != ('',''):
+                                print(self.path[0])
+                                return self.path[0]
+                except:
+                        ctypes.windll.user32.MessageBoxW(0, "Error occured.", "Error!", 0)
 
         def SaveClickListener(self):
                 try:
-                        dialog = QtWidgets.QFileDialog()
-                        self.path = dialog.getSaveFileName(self,"Save File","","CSV data files (*.csv);;Excel (*.xlsx)")
-                        self.df.to_csv(self.path[0], index=False)
-                        self.df = pd.read_csv(self.path[0])
-                        info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
-                        self.dataset_info.setText(info)
-                        self.pandasTv_model = PandasModel(self.df)
-                        self.pandasTv.setModel(self.pandasTv_model)
-                        self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
-                        if (self.df.dtypes[self.df.columns[self.item.column()]] != 'object'):
-                                td=tendanceCentrale(self.df[self.df.columns[self.item.column()]])
-                                dis=dispersion(self.df[self.df.columns[self.item.column()]])
-                                q=dis[0][4]
-                                if len(dis[1])!=0:
-                                        outliers=str(dis[1])
-                                else:
-                                        outliers="no outliers"
-                                info="Column name: "+str(self.df.columns[self.item.column()])+"\nColumn type: "+str(self.df.dtypes[self.df.columns[self.item.column()]])+"\nMean: "+str(td['mean'])+"\nMedian: "+str(td['median'])+"\nMode: "+str(td['mode'])+"\nSymmetry: "+td['symetrie']+"\nEcart type: "+str(dis[0][0])+"\nVariance: "+str(dis[0][1])+"\nMin: "+str(dis[0][3])+"\nQ1: "+str(q[0])+"\nQ3: "+str(q[1])+"\nMax: "+str(dis[0][5])+"\nIQR: "+str(dis[0][2])+"\nOutliers: "+outliers
-                                        #print(info)
+                        if(self.loaded==True):
+                                dialog = QtWidgets.QFileDialog()
+                                self.path = dialog.getSaveFileName(self,"Save File","","CSV data files (*.csv);;Excel (*.xlsx)")
+                                self.df.to_csv(self.path[0], index=False)
+                                self.df = pd.read_csv(self.path[0])
+                                info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
+                                self.dataset_info.setText(info)
+                                self.pandasTv_model = PandasModel(self.df)
+                                self.pandasTv.setModel(self.pandasTv_model)
+                                self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
                                 self.column_info.clear()
-                                self.column_info.insertPlainText(info)
+                                # if (self.df.dtypes[self.df.columns[self.item.column()]] != 'object'):
+                                #         td=tendanceCentrale(self.df[self.df.columns[self.item.column()]])
+                                #         dis=dispersion(self.df[self.df.columns[self.item.column()]])
+                                #         q=dis[0][4]
+                                #         if len(dis[1])!=0:
+                                #                 outliers=str(dis[1])
+                                #         else:
+                                #                 outliers="no outliers"
+                                #         info="Column name: "+str(self.df.columns[self.item.column()])+"\nColumn type: "+str(self.df.dtypes[self.df.columns[self.item.column()]])+"\nMean: "+str(td['mean'])+"\nMedian: "+str(td['median'])+"\nMode: "+str(td['mode'])+"\nSymmetry: "+td['symetrie']+"\nEcart type: "+str(dis[0][0])+"\nVariance: "+str(dis[0][1])+"\nMin: "+str(dis[0][3])+"\nQ1: "+str(q[0])+"\nQ3: "+str(q[1])+"\nMax: "+str(dis[0][5])+"\nIQR: "+str(dis[0][2])+"\nOutliers: "+outliers
+                                #                 #print(info)
+                                #         self.column_info.clear()
+                                #         self.column_info.insertPlainText(info)
+                                # else:
+                                #         info="Column name: "+str(self.df.columns[self.item.column()])+"\nColumn type: "+str(self.df.dtypes[self.df.columns[self.item.column()]])
+                                #         print(info)
+                                #         self.column_info.clear()
+                                #         self.column_info.insertPlainText(info)
                         else:
-                                info="Column name: "+str(self.df.columns[self.item.column()])+"\nColumn type: "+str(self.df.dtypes[self.df.columns[self.item.column()]])
-                                print(info)
-                                self.column_info.clear()
-                                self.column_info.insertPlainText(info)
+                                ctypes.windll.user32.MessageBoxW(0, "No dataset loaded.", "Error!", 0)
 
                 except:
-                        ctypes.windll.user32.MessageBoxW(0, "No dataset loaded.", "Error!", 0)
+                        ctypes.windll.user32.MessageBoxW(0, "Error occured.", "Error!", 0)
 
 
         def discretizeK(self):
@@ -222,13 +237,16 @@ class Ui(QtWidgets.QMainWindow):
                 self.second.setModal(True)
                 self.second.setAttribute(QtCore.Qt.WA_DeleteOnClose)                
                 self.second.exec()
+                try:
 
-                self.df=table_discret
-                self.pandasTv_model = PandasModel(self.df)
-                info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
-                self.dataset_info.setText(info)
-                self.pandasTv.setModel(self.pandasTv_model)
-                self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
+                        self.df=table_discret.T
+                        self.pandasTv_model = PandasModel(self.df)
+                        info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
+                        self.dataset_info.setText(info)
+                        self.pandasTv.setModel(self.pandasTv_model)
+                        self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
+                except:
+                        ctypes.windll.user32.MessageBoxW(0, "Discretization was cancelled.", "Message", 0)
 
 
         def discretizeQ(self):
@@ -240,13 +258,16 @@ class Ui(QtWidgets.QMainWindow):
                 self.second.setModal(True)
                 self.second.setAttribute(QtCore.Qt.WA_DeleteOnClose)                
                 self.second.exec()
+                try:
 
-                self.df=table_discret
-                self.pandasTv_model = PandasModel(self.df)
-                info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
-                self.dataset_info.setText(info)
-                self.pandasTv.setModel(self.pandasTv_model)
-                self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
+                        self.df=table_discret.T
+                        self.pandasTv_model = PandasModel(self.df)
+                        info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
+                        self.dataset_info.setText(info)
+                        self.pandasTv.setModel(self.pandasTv_model)
+                        self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
+                except:
+                        ctypes.windll.user32.MessageBoxW(0, "Discretization was cancelled.", "Message", 0)
 
 
 
