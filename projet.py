@@ -636,20 +636,32 @@ class Ui(QtWidgets.QMainWindow):
                 except:
                         ctypes.windll.user32.MessageBoxW(0, "No dataset loaded.", "Error!", 0)
 
+        def organize_df(self,dataframe, new_index, target):
+                new_df = dataframe.set_index(new_index)
+                user_categs = {}
+                for each in new_df.index.unique():
+                        if(isinstance(new_df.loc[each][target], str)): 
+                                user_categs[each] = [new_df.loc[each][target]]
+                        else: 
+                                user_categs[each] = list(set(new_df.loc[each][target]))
+                return user_categs
+
         def Preprocess(self):
                 try:
-                        self.data = create_data_table(self.df)
-                        columns=['User','Videos Category']
+                        data=self.organize_df(self.df, "Watcher", "videoCategoryLabel")
+                        users=data.keys()
                         rows=[]
-                        for key in self.data.keys():
+                        for user in users:
                                 row=[]
-                                row.append(key)
-                                row.append(self.data[key])
+                                vids=data[user]
+                                for vid in vids:
+                                        row.append(vid)
                                 rows.append(row)
-                        self.df=pd.DataFrame(rows,columns=columns)
-                        info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
+                        df=pd.DataFrame(rows,users)
+                        df.fillna(value=np.nan,inplace=True)
+                        info="Nombre de lignes: "+str(df.shape[0])+"\nNombre de colonnes: "+str(df.shape[1])+"\nNombre de valeurs nulles: "+str(df.isnull().sum().sum())
                         print(info)
-                        self.pandasTv_model = PandasModel(self.df)
+                        self.pandasTv_model = PandasModel(df)
                         self.pandasTv.setModel(self.pandasTv_model)
                         self.pandasTv.clicked[QtCore.QModelIndex].connect(self.ColumnClickListener)
                         self.dataset_info.setText(info)
@@ -660,7 +672,7 @@ class Ui(QtWidgets.QMainWindow):
 
         def Apriori(self):
                 try:
-                                
+                        self.data = create_data_table(self.df)        
                         rules = algorithme_apriori(self.data, self.Min_supp.value(), self.Min_conf.value())
                         pd.set_option('display.max_colwidth', None)
                         association_rules = pd.DataFrame(rules, columns = ["Rule","Confidence","Lift"])
