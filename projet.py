@@ -164,6 +164,20 @@ class Ui(QtWidgets.QMainWindow):
 
                 self.tabs=self.findChild(QtWidgets.QTabWidget,"tabwidget")
 
+                self.categ_list=self.findChild(QtWidgets.QListView,'categ_list')
+                self.categ_list.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+                self.listModel = QtGui.QStandardItemModel()
+                self.categ_list.setModel(self.listModel)
+                self.categ_combo=self.findChild(QtWidgets.QComboBox,'vids_categories')
+                self.add_categ= self.findChild(QtWidgets.QPushButton,'add_categ')
+                self.add_categ.clicked.connect(self.Add_Category)
+                self.remove_categ= self.findChild(QtWidgets.QPushButton,'remove_categ')
+                self.remove_categ.clicked.connect(self.Remove_Category)
+                self.Recommend_button= self.findChild(QtWidgets.QPushButton,'recommend_button')
+                self.Recommend_button.clicked.connect(self.Recommend)
+                self.clear_button= self.findChild(QtWidgets.QPushButton,'clear_button')
+                self.clear_button.clicked.connect(self.Clear)
+
                 self.pandasTv=self.findChild(QtWidgets.QTableView,'pandasTv')
                 self.pandasTv.setStyleSheet("QTableView {background-color:rgb(16, 5, 44);}")
                 self.pandasTv.setSortingEnabled(True)
@@ -192,8 +206,17 @@ class Ui(QtWidgets.QMainWindow):
                         self.replace_null_column.addItems(columns)
                         self.replace_outlier_column.clear()
                         self.replace_outlier_column.addItems(columns)
+                        self.categ_combo.clear()
                         if self.path != ('',''):
-                                print(self.path[0])
+                                print(self.path[0])                                
+                                if self.path[0].endswith('dataset2.csv'):
+                                        self.all_categs = []
+                                        for each in self.df['videoCategoryLabel']:
+                                                self.all_categs.append(each)
+                                        self.all_categs = list(set( self.all_categs))
+                                        self.all_categs = [x.replace('_',' ') for x in  self.all_categs]
+                                        self.categ_combo.addItems(self.all_categs)
+                                        self.categ_combo.setEnabled(True)
                                 return self.path[0]
                 except:
                         ctypes.windll.user32.MessageBoxW(0, "Error occured.", "Error!", 0)
@@ -675,8 +698,8 @@ class Ui(QtWidgets.QMainWindow):
                         self.data = create_data_table(self.df)        
                         rules = algorithme_apriori(self.data, self.Min_supp.value(), self.Min_conf.value())
                         pd.set_option('display.max_colwidth', None)
-                        association_rules = pd.DataFrame(rules, columns = ["Rule","Confidence","Lift"])
-                        self.df=association_rules                
+                        self.association_rules = pd.DataFrame(rules, columns = ["Rule","Confidence","Lift"])
+                        self.df=self.association_rules                
                         info="Nombre de lignes: "+str(self.df.shape[0])+"\nNombre de colonnes: "+str(self.df.shape[1])+"\nNombre de valeurs nulles: "+str(self.df.isnull().sum().sum())
                         print(info)
                         #self.dataset_info.setText(info)
@@ -687,6 +710,54 @@ class Ui(QtWidgets.QMainWindow):
                         self.column_info.clear()
                 except:
                         ctypes.windll.user32.MessageBoxW(0, "Error occured.", "Error!", 0)
+                
+        def Add_Category(self):
+                try:
+                        self.listModel.appendRow(QtGui.QStandardItem(self.categ_combo.currentText()))
+                except:
+                        ctypes.windll.user32.MessageBoxW(0, "Error occured.", "Error!", 0)
+
+        def Remove_Category(self):
+                try:
+                        if self.listModel.rowCount()>0:
+                                indexes = self.categ_list.selectedIndexes()
+                                if indexes:
+                                        index = indexes[0]
+                                        self.listModel.removeRow(index.row())
+                except:
+                        ctypes.windll.user32.MessageBoxW(0, "Error occured.", "Error!", 0)
+
+        def Recommend(self):
+                try:
+                        categs = []
+                        for index in range(self.listModel.rowCount()):
+                                item = self.listModel.item(index).text()
+                                categs.append(item)
+                        self.listModel.removeRows( 0, self.listModel.rowCount())
+                        recoms = get_relevent_rules(self.association_rules,list(set(categs)))
+                        recoms.extend(categs)
+                        categs=list(set(recoms))
+                        print (categs)
+                        for each in categs:
+                                self.listModel.appendRow(QtGui.QStandardItem(each))
+                except:
+                        ctypes.windll.user32.MessageBoxW(0, "Error occured.", "Error!", 0)
+
+        def Clear(self):
+                self.listModel.removeRows( 0, self.listModel.rowCount() )
+
+def get_relevent_rules(association_rules, list_of_interests):
+        recommendation = []
+        for r in association_rules.Rule:
+                rule = r.replace('{', '')
+                rule = rule.replace('}', '')
+                rule = rule.replace("'", '')
+                rule = rule.split(" ---> ")
+                X = rule[0].split(", ")
+                Y = rule[1].split(", ")
+                if any(list_of_interests[idx : idx + len(X)] == X for idx in range(len(list_of_interests) - len(X) + 1)):
+                        recommendation.extend(Y)
+        return list(set(recommendation))
 
 def discretisation_effectifs(df_column, Q, method):
         step = (len(df_column)//Q)+1
@@ -710,6 +781,8 @@ def discretisation_effectifs(df_column, Q, method):
         # but in this case we need to ask the chosen method for each column so idk about that lol 
         # they must also have the same number of quantiles too so
         return quantiles
+
+        
 
 import math
 def discretisation_amplitude(df_column, K, method):

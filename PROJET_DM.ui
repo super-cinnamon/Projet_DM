@@ -249,7 +249,7 @@ QTabBar::tab:only-one {
 }</string>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="partie1">
      <attribute name="title">
@@ -1161,7 +1161,7 @@ color: rgb(255, 105, 185);</string>
      <widget class="Line" name="line_4">
       <property name="geometry">
        <rect>
-        <x>350</x>
+        <x>380</x>
         <y>10</y>
         <width>20</width>
         <height>211</height>
@@ -1174,8 +1174,8 @@ color: rgb(255, 105, 185);</string>
      <widget class="QLabel" name="label_15">
       <property name="geometry">
        <rect>
-        <x>120</x>
-        <y>20</y>
+        <x>50</x>
+        <y>10</y>
         <width>121</width>
         <height>20</height>
        </rect>
@@ -1191,7 +1191,7 @@ color: rgb(255, 105, 185);</string>
      <widget class="QLabel" name="label_16">
       <property name="geometry">
        <rect>
-        <x>450</x>
+        <x>490</x>
         <y>20</y>
         <width>151</width>
         <height>16</height>
@@ -1208,7 +1208,7 @@ color: rgb(255, 105, 185);</string>
      <widget class="QDoubleSpinBox" name="min_supp">
       <property name="geometry">
        <rect>
-        <x>380</x>
+        <x>420</x>
         <y>90</y>
         <width>111</width>
         <height>25</height>
@@ -1231,7 +1231,7 @@ color: rgb(51, 23, 84);</string>
      <widget class="QDoubleSpinBox" name="min_conf">
       <property name="geometry">
        <rect>
-        <x>520</x>
+        <x>560</x>
         <y>90</y>
         <width>111</width>
         <height>25</height>
@@ -1254,7 +1254,7 @@ color: rgb(51, 23, 84);</string>
      <widget class="QLabel" name="label_17">
       <property name="geometry">
        <rect>
-        <x>390</x>
+        <x>430</x>
         <y>70</y>
         <width>91</width>
         <height>20</height>
@@ -1271,7 +1271,7 @@ color: rgb(255, 105, 185);</string>
      <widget class="QLabel" name="label_18">
       <property name="geometry">
        <rect>
-        <x>530</x>
+        <x>570</x>
         <y>70</y>
         <width>101</width>
         <height>20</height>
@@ -1288,7 +1288,7 @@ color: rgb(255, 105, 185);</string>
      <widget class="QPushButton" name="apriori_button">
       <property name="geometry">
        <rect>
-        <x>470</x>
+        <x>510</x>
         <y>150</y>
         <width>80</width>
         <height>24</height>
@@ -1316,8 +1316,8 @@ QPushButton:focus {
      <widget class="QPushButton" name="preprocess_button">
       <property name="geometry">
        <rect>
-        <x>120</x>
-        <y>90</y>
+        <x>50</x>
+        <y>40</y>
         <width>101</width>
         <height>31</height>
        </rect>
@@ -1339,6 +1339,173 @@ QPushButton:focus {
       </property>
       <property name="text">
        <string>Preprocess Data</string>
+      </property>
+     </widget>
+     <widget class="QListView" name="categ_list">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>11</y>
+        <width>171</width>
+        <height>171</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-width:2px;
+border-radius:10px;
+border-width:2px;
+border-style:outset;
+border-color: rgb(148, 88, 122);
+background-color: rgb(255, 255, 255);
+font: 350 10pt &quot;Bahnschrift SemiLight&quot;;</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_19">
+      <property name="geometry">
+       <rect>
+        <x>60</x>
+        <y>110</y>
+        <width>121</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 600 11pt &quot;Bahnschrift SemiBold&quot;;
+color: rgb(255, 105, 185);</string>
+      </property>
+      <property name="text">
+       <string>Categories</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="vids_categories">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>140</y>
+        <width>141</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color:rgb(255, 147, 203);
+	border-radius:10px;
+	border-style:outset;
+color: rgb(51, 23, 84);</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="add_categ">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>140</y>
+        <width>21</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton{
+	background-color:rgb(255, 147, 203);
+	border-radius:10px;
+	border-style:outset;
+	color: rgb(51, 23, 84);
+}
+QPushButton:hover {
+            background-color: rgb(246, 252, 126);
+        }
+QPushButton:focus {
+            background-color: rgb(90, 71, 173);
+        }
+</string>
+      </property>
+      <property name="text">
+       <string>+</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="recommend_button">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>180</y>
+        <width>101</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton{
+	background-color:rgb(255, 147, 203);
+	border-radius:10px;
+	border-style:outset;
+	color: rgb(51, 23, 84);
+}
+QPushButton:hover {
+            background-color: rgb(246, 252, 126);
+        }
+QPushButton:focus {
+            background-color: rgb(90, 71, 173);
+        }
+</string>
+      </property>
+      <property name="text">
+       <string>Recommend</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="remove_categ">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>180</y>
+        <width>21</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton{
+	background-color:rgb(255, 147, 203);
+	border-radius:10px;
+	border-style:outset;
+	color: rgb(51, 23, 84);
+}
+QPushButton:hover {
+            background-color: rgb(246, 252, 126);
+        }
+QPushButton:focus {
+            background-color: rgb(90, 71, 173);
+        }
+</string>
+      </property>
+      <property name="text">
+       <string>-</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="clear_button">
+      <property name="geometry">
+       <rect>
+        <x>250</x>
+        <y>190</y>
+        <width>71</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton{
+	background-color:rgb(255, 147, 203);
+	border-radius:10px;
+	border-style:outset;
+	color: rgb(51, 23, 84);
+}
+QPushButton:hover {
+            background-color: rgb(246, 252, 126);
+        }
+QPushButton:focus {
+            background-color: rgb(90, 71, 173);
+        }
+</string>
+      </property>
+      <property name="text">
+       <string>Clear</string>
       </property>
      </widget>
     </widget>
