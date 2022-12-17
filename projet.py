@@ -401,6 +401,8 @@ class Ui(QtWidgets.QMainWindow):
                 self.class_predict= self.findChild(QtWidgets.QPlainTextEdit,'class_predict')
                 self.matrix = self.findChild(QtWidgets.QTableView,'matrix')
                 self.matrix.setStyleSheet("QTableView {background-color:rgb(99,78,163); color:white; gridline-color: black; border-color: rgb(242, 128, 133); font:350 11px 'Bahnschrift SemiLight';} QHeaderView::section {background-color: rgb(63, 50, 105);color: white;height: 20px;width: 20px; font:350 10px 'Bahnschrift SemiLight';} QTableCornerButton::section {background-color: rgb(63, 50, 105); color: rgb(200, 200, 200);}")
+                self.matrix.resizeRowsToContents()
+                self.matrix.resizeColumnsToContents()
 
                 self.pandasTv=self.findChild(QtWidgets.QTableView,'pandasTv')
                 self.pandasTv.setStyleSheet("QTableView {background-color:rgb(16, 5, 44);}")
