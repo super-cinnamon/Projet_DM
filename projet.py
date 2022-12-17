@@ -8,6 +8,8 @@ from PyQt5.QtWidgets import QFileDialog
 from PandasModel import PandasModel
 import sys
 import ctypes
+import random
+import timeit
 from collections import Counter
 matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
@@ -75,6 +77,196 @@ class Second(QtWidgets.QDialog):
         def Cancel(self):
                 self.close()
 		
+class User_Input(QtWidgets.QDialog):
+        def __init__(self,dataset,columns,tree,forest):
+                super(User_Input, self).__init__()
+                uic.loadUi('user_input.ui', self)
+                self.setWindowIcon(QtGui.QIcon('pick_logo.png'))
+                
+                self.columns=columns
+                self.nb_cols=len(columns)
+                self.original_df=pd.read_csv('dataset1.csv')
+                self.processed_df=dataset
+                self.column_combo=self.findChild(QtWidgets.QComboBox,'column_combo')
+                self.column_combo.addItems(self.columns)
+                self.tree=tree
+                self.forest=forest
+                self.value_edit = self.findChild(QtWidgets.QPlainTextEdit,'value_edit')
+                self.category_combo=self.findChild(QtWidgets.QComboBox,'category_combo')
+                self.next_button=self.findChild(QtWidgets.QPushButton,'next_button')
+                self.next_button.clicked.connect(self.Next)
+                self.ok_button=self.findChild(QtWidgets.QPushButton,'ok')
+                self.ok_button.clicked.connect(self.Okay)
+                self.cancel_button=self.findChild(QtWidgets.QPushButton,'cancel_button')
+                self.cancel_button.clicked.connect(self.Cancel)
+                self.column_combo.activated.connect(self.column_changed)
+                self.method_combo=self.findChild(QtWidgets.QComboBox,'method_combo')
+                self.input = []
+                self.indexes = []
+
+                if len(self.original_df[self.column_combo.currentText()].unique())<=15 or self.original_df[self.column_combo.currentText()].dtype=='object':                        
+                        self.value_edit.setEnabled(False)
+                        self.category_combo.setEnabled(True)
+                        if self.original_df[self.column_combo.currentText()].unique().dtype==np.int64 or self.original_df[self.column_combo.currentText()].unique().dtype==np.float64:
+                                self.category_combo.addItems([str(x) for x in self.original_df[self.column_combo.currentText()].dropna().unique()])
+                        else:
+                                self.category_combo.addItems(self.original_df[self.column_combo.currentText()].unique())
+                else:
+                        self.value_edit.setEnabled(True)
+                        self.category_combo.setEnabled(False)
+
+                
+
+        def column_changed(self):
+                self.value_edit.clear()
+                self.category_combo.clear()
+                if len(self.original_df[self.column_combo.currentText()].unique())<=15 or self.original_df[self.column_combo.currentText()].dtype=='object':                        
+                        self.value_edit.setEnabled(False)
+                        self.category_combo.setEnabled(True)
+                        if self.original_df[self.column_combo.currentText()].unique().dtype==np.int64 or self.original_df[self.column_combo.currentText()].unique().dtype==np.float64:
+                                self.category_combo.addItems([str(x) for x in self.original_df[self.column_combo.currentText()].dropna().unique()])
+                        else:
+                                self.category_combo.addItems(self.original_df[self.column_combo.currentText()].unique())
+                else:
+                        self.value_edit.setEnabled(True)
+                        self.category_combo.setEnabled(False)
+
+        def Next(self):
+                if(len(self.columns)!=0):
+                        if len(self.original_df[self.column_combo.currentText()].unique())<=15 or self.original_df[self.column_combo.currentText()].dtype=='object':
+                                self.input.append(self.category_combo.currentText())
+                                self.indexes.append(self.column_combo.currentText())
+                                self.columns.remove(self.column_combo.currentText())
+                                self.column_combo.clear()
+                                self.value_edit.clear()
+                                self.category_combo.clear()
+                                self.column_combo.addItems(self.columns)
+                        else:
+                                if self.original_df[self.column_combo.currentText()].dtype==np.int64 and self.value_edit.toPlainText().isdigit():                                        
+                                        self.input.append(int(self.value_edit.toPlainText()))
+                                        print(type(self.input[-1]))
+                                        self.indexes.append(self.column_combo.currentText())
+                                        self.columns.remove(self.column_combo.currentText())
+                                        self.column_combo.clear()
+                                        self.value_edit.clear()
+                                        self.category_combo.clear()
+                                        self.column_combo.addItems(self.columns)
+                                        if(len(self.columns)!=0):
+
+                                                if len(self.original_df[self.column_combo.currentText()].unique())<=15 or self.original_df[self.column_combo.currentText()].dtype=='object':                        
+                                                        self.value_edit.setEnabled(False)
+                                                        self.category_combo.setEnabled(True)
+                                                        if self.original_df[self.column_combo.currentText()].unique().dtype==np.int64 or self.original_df[self.column_combo.currentText()].unique().dtype==np.float64:
+                                                                self.category_combo.addItems([str(x) for x in self.original_df[self.column_combo.currentText()].dropna().unique()])
+                                                        else:
+                                                                self.category_combo.addItems(self.original_df[self.column_combo.currentText()].unique())
+                                                else:
+                                                        self.value_edit.setEnabled(True)
+                                                        self.category_combo.setEnabled(False)
+                                elif self.original_df[self.column_combo.currentText()].dtype==np.float64 and type(float(self.value_edit.toPlainText()))==self.original_df[self.column_combo.currentText()].dtype:
+                                        self.input.append(float(self.value_edit.toPlainText()))
+                                        print(type(self.input[-1]))
+                                        self.indexes.append(self.column_combo.currentText())
+                                        self.columns.remove(self.column_combo.currentText())
+                                        self.column_combo.clear()
+                                        self.value_edit.clear()
+                                        self.category_combo.clear()
+                                        self.column_combo.addItems(self.columns)
+                                        if(len(self.columns)!=0):
+                                                if len(self.original_df[self.column_combo.currentText()].unique())<=15 or self.original_df[self.column_combo.currentText()].dtype=='object':                        
+                                                        self.value_edit.setEnabled(False)
+                                                        self.category_combo.setEnabled(True)
+                                                        if self.original_df[self.column_combo.currentText()].unique().dtype==np.int64 or self.original_df[self.column_combo.currentText()].unique().dtype==np.float64:
+                                                                self.category_combo.addItems([str(x) for x in self.original_df[self.column_combo.currentText()].dropna().unique()])
+                                                        else:
+                                                                self.category_combo.addItems(self.original_df[self.column_combo.currentText()].unique())
+                                                else:
+                                                        self.value_edit.setEnabled(True)
+                                                        self.category_combo.setEnabled(False)
+                                else : ctypes.windll.user32.MessageBoxW(0, "Input must be integer or float.", "", 0)
+                        
+                else:
+                        ctypes.windll.user32.MessageBoxW(0, "List empty, press OK to proceed.", "", 0)
+
+        def Okay(self):
+                if len(self.input)==self.nb_cols:
+                        global prediction
+                        series_topredict=pd.Series(self.input,index=self.indexes)
+                        for column,value in series_topredict.items():
+                                print(column,value)
+                                if self.original_df[column].dtype !='object':
+                                        old_min=float(self.original_df[column].min())
+                                        old_max=float(self.original_df[column].max())
+                                        new_min=float(self.processed_df[column].min())
+                                        new_max=float(self.processed_df[column].max())
+                                        series_topredict[column]=(float(value)-old_min)/(old_max-old_min)*(new_max-new_min)+new_min
+                                elif column=='Gender':                                        
+                                        self.original_df.loc[self.original_df[column]=='Female','Gender']=0
+                                        self.original_df.loc[self.original_df[column]=='Male','Gender']=1
+                                        if value == 'Female': value=0
+                                        else: value=1
+                                        if series_topredict[column] ==0:
+                                                series_topredict[column]=0
+                                                old_min=float(self.original_df[column].min())
+                                                old_max=float(self.original_df[column].max())
+                                                new_min=float(self.processed_df[column].min())
+                                                new_max=float(self.processed_df[column].max())
+                                                series_topredict[column]=(float(value)-old_min)/(old_max-old_min)*(new_max-new_min)+new_min
+                                        else:
+                                                series_topredict[column]=1
+                                                old_min=float(self.original_df[column].min())
+                                                old_max=float(self.original_df[column].max())
+                                                new_min=float(self.processed_df[column].min())
+                                                new_max=float(self.processed_df[column].max())
+                                                series_topredict[column]=(float(value)-old_min)/(old_max-old_min)*(new_max-new_min)+new_min
+                                elif column=='BusinessTravel':
+                                        self.original_df.loc[self.original_df[column]=='Non-Travel','BusinessTravel']=0
+                                        self.original_df.loc[self.original_df[column]=='Travel_Rarely','BusinessTravel']=1
+                                        self.original_df.loc[self.original_df[column]=='Travel_Frequently','BusinessTravel']=2
+                                        if value == 'Non-Travel': value=0
+                                        elif value == 'Travel_Rarely': value=1
+                                        else: value=2
+                                        if series_topredict[column] ==0:
+                                                series_topredict[column]=0
+                                                old_min=float(self.original_df[column].min())
+                                                old_max=float(self.original_df[column].max())
+                                                new_min=float(self.processed_df[column].min())
+                                                new_max=float(self.processed_df[column].max())
+                                                series_topredict[column]=(float(value)-old_min)/(old_max-old_min)*(new_max-new_min)+new_min
+                                        elif series_topredict[column] ==1:
+                                                series_topredict[column]=1
+                                                old_min=float(self.original_df[column].min())
+                                                old_max=float(self.original_df[column].max())
+                                                new_min=float(self.processed_df[column].min())
+                                                new_max=float(self.processed_df[column].max())
+                                                series_topredict[column]=(float(value)-old_min)/(old_max-old_min)*(new_max-new_min)+new_min
+                                        else:
+                                                series_topredict[column]=2
+                                                old_min=float(self.original_df[column].min())
+                                                old_max=float(self.original_df[column].max())
+                                                new_min=float(self.processed_df[column].min())
+                                                new_max=float(self.processed_df[column].max())
+                                                series_topredict[column]=(float(value)-old_min)/(old_max-old_min)*(new_max-new_min)+new_min
+                        print(series_topredict)
+
+                        if(self.method_combo.currentText()=="Decision trees" and self.tree is not None) :
+                                if self.tree is not None:
+                                        prediction=predict_example(series_topredict,self.tree)
+                                        print(prediction)
+                                        self.close()
+                        elif (self.method_combo.currentText()=="Random forest" and self.forest is not None):
+                                if (self.forest is not None):   
+                                        series_topredict = series_topredict.to_frame().T
+                                        prediction = random_forest_predictions(series_topredict, self.forest)
+                                        prediction = prediction[0]
+                                        self.close()             
+
+                        
+                else:
+                        ctypes.windll.user32.MessageBoxW(0, "Insert a value for all columns.", "", 0)
+
+        def Cancel(self):
+                self.close()
 
 class Ui(QtWidgets.QMainWindow):
         def __init__(self):
@@ -177,6 +369,38 @@ class Ui(QtWidgets.QMainWindow):
                 self.Recommend_button.clicked.connect(self.Recommend)
                 self.clear_button= self.findChild(QtWidgets.QPushButton,'clear_button')
                 self.clear_button.clicked.connect(self.Clear)
+
+                self.split_spin=self.findChild(QtWidgets.QDoubleSpinBox,'split_spin')
+                self.split_button= self.findChild(QtWidgets.QPushButton,'split_btn')
+                self.split_button.clicked.connect(self.Split)
+                self.max_depth_tree=self.findChild(QtWidgets.QSpinBox,'max_depth_tree')
+                self.generate_tree=self.findChild(QtWidgets.QPushButton,'gen_tree')
+                self.generate_tree.clicked.connect(self.GenerateTree)
+                self.runtimeedit = self.findChild(QtWidgets.QPlainTextEdit,'runtime')
+                self.accuracyedit_tree = self.findChild(QtWidgets.QPlainTextEdit,'accuracy_edit')
+                self.accracy_tree = self.findChild(QtWidgets.QPushButton,'get_accuracy_tree')
+                self.accracy_tree.clicked.connect(self.GetAccuracyTree)
+                self.specificityedit = self.findChild(QtWidgets.QPlainTextEdit,'specificity')
+                self.sensitivityedit = self.findChild(QtWidgets.QPlainTextEdit,'sensitivity')
+                self.precisionedit = self.findChild(QtWidgets.QPlainTextEdit,'precision')
+                self.fscoreedit = self.findChild(QtWidgets.QPlainTextEdit,'fscore')
+                self.nb_samples_spin = self.findChild(QtWidgets.QSpinBox,'nb_samples_spin')
+                self.nb_trees_spin = self.findChild(QtWidgets.QSpinBox,'nb_trees_spin')
+                self.max_depth_forest = self.findChild(QtWidgets.QSpinBox,'max_depth_forest')
+                self.nb_features_forest = self.findChild(QtWidgets.QSpinBox,'nb_features_forest')
+                self.generate_forest = self.findChild(QtWidgets.QPushButton,'gen_forest')
+                self.generate_forest.clicked.connect(self.GenerateForest)
+                self.get_acc_forest = self.findChild(QtWidgets.QPushButton,'get_acc_forest')
+                self.get_acc_forest.clicked.connect(self.GetAccuracyForest)
+                self.accuracyedit_forest = self.findChild(QtWidgets.QPlainTextEdit,'acc_forest')
+                self.nb_bootstraps = self.findChild(QtWidgets.QSpinBox,'nb_bootstraps')
+                self.insertvalues_btn = self.findChild(QtWidgets.QPushButton,'insertvalues_btn')
+                self.insertvalues_btn.clicked.connect(self.InsertValues)
+                self.tree=None
+                self.forest=None
+                self.class_predict= self.findChild(QtWidgets.QPlainTextEdit,'class_predict')
+                self.matrix = self.findChild(QtWidgets.QTableView,'matrix')
+                self.matrix.setStyleSheet("QTableView {background-color:rgb(99,78,163); color:white; gridline-color: black; border-color: rgb(242, 128, 133); font:350 11px 'Bahnschrift SemiLight';} QHeaderView::section {background-color: rgb(63, 50, 105);color: white;height: 20px;width: 20px; font:350 10px 'Bahnschrift SemiLight';} QTableCornerButton::section {background-color: rgb(63, 50, 105); color: rgb(200, 200, 200);}")
 
                 self.pandasTv=self.findChild(QtWidgets.QTableView,'pandasTv')
                 self.pandasTv.setStyleSheet("QTableView {background-color:rgb(16, 5, 44);}")
@@ -746,6 +970,116 @@ class Ui(QtWidgets.QMainWindow):
         def Clear(self):
                 self.listModel.removeRows( 0, self.listModel.rowCount() )
 
+        def Split(self):
+                self.data = self.df
+                self.data['label'] = self.data.Attrition
+                self.data = self.data.drop("Attrition", axis=1)
+                self.train_df, self.test_df = train_test_split(self.data, test_size=self.split_spin.value())
+                print(self.train_df)
+
+        def GenerateTree(self):
+                try:    
+                        print(self.max_depth_tree.value())                
+                        start = timeit.default_timer()
+                        self.tree = decision_tree_algorithm(self.train_df,min_samples=self.nb_samples_spin.value(), max_depth=self.max_depth_tree.value())
+                        stop = timeit.default_timer()
+                        print(stop-start)
+                        self.runtimeedit.clear()
+                        self.runtimeedit.insertPlainText(str(round(stop-start,3)))
+                        
+                except:
+                        ctypes.windll.user32.MessageBoxW(0, "Error occured.", "Error!", 0)
+
+        def GetAccuracyTree(self):
+                try:
+                        start = timeit.default_timer()
+                        self.predictions = decision_tree_predictions(self.test_df, self.tree)
+                        self.accuracy = calculate_accuracy(self.predictions, self.test_df.label)
+                        self.f_score = f_score(self.test_df.label,self.predictions)
+                        self.precision = precision(self.test_df.label,self.predictions)
+                        self.sensitivity = sensitivity(self.test_df.label,self.predictions )
+                        self.specificity = specificity(self.test_df.label,self.predictions )
+                        stop = timeit.default_timer()
+                        print(stop-start)
+                        self.runtimeedit.clear()
+                        self.accuracyedit_tree.clear()
+                        self.specificityedit.clear()
+                        self.sensitivityedit.clear()
+                        self.precisionedit.clear()
+                        self.fscoreedit.clear()
+                        self.runtimeedit.insertPlainText(str(round(stop-start,3)))
+                        self.accuracyedit_tree.insertPlainText(str(round(self.accuracy,3)))
+                        self.specificityedit.insertPlainText(str(round(self.specificity,3)))
+                        self.sensitivityedit.insertPlainText(str(round(self.sensitivity,3)))
+                        self.precisionedit.insertPlainText(str(round(self.precision,3)))
+                        self.fscoreedit.insertPlainText(str(round(self.f_score,3)))
+                        self.matrix_model = PandasModel(pd.DataFrame(confusion_matrix(self.predictions,self.test_df.label)))
+                        self.matrix.resizeRowsToContents()
+                        self.matrix.resizeColumnsToContents()
+                        self.matrix.setModel(self.matrix_model)
+                except:
+                        ctypes.windll.user32.MessageBoxW(0, "Error occured.", "Error!", 0)
+
+        def GenerateForest(self):
+                try:
+                        start = timeit.default_timer()
+                        self.forest = random_forest_algorithm(train_df = self.train_df,n_trees= self.nb_trees_spin.value(),dt_max_depth=self.max_depth_tree.value(),n_bootstrap=self.nb_bootstraps.value(),n_features=self.nb_features_forest.value())
+                        stop = timeit.default_timer()
+                        print(stop-start)
+                        self.runtimeedit.clear()
+                        self.runtimeedit.insertPlainText(str(round(stop-start,3)))
+                except:
+                        ctypes.windll.user32.MessageBoxW(0, "Error occured.", "Error!", 0)
+
+        def GetAccuracyForest(self):
+                try:
+                        start = timeit.default_timer()
+                        self.predictions = random_forest_predictions(self.test_df, self.forest)
+                        self.accuracy = calculate_accuracy(self.predictions, self.test_df.label)
+                        self.f_score = f_score(self.test_df.label,self.predictions)
+                        self.precision = precision(self.test_df.label,self.predictions)
+                        self.sensitivity = sensitivity(self.test_df.label,self.predictions )
+                        self.specificity = specificity(self.test_df.label,self.predictions )
+                        stop = timeit.default_timer()
+                        print(stop-start)
+                        self.runtimeedit.clear()
+                        self.accuracyedit_forest.clear()
+                        self.specificityedit.clear()
+                        self.sensitivityedit.clear()
+                        self.precisionedit.clear()
+                        self.fscoreedit.clear()
+                        self.runtimeedit.insertPlainText(str(round(stop-start,3)))
+                        self.accuracyedit_forest.insertPlainText(str(round(self.accuracy,3)))
+                        self.specificityedit.insertPlainText(str(round(self.specificity,3)))
+                        self.sensitivityedit.insertPlainText(str(round(self.sensitivity,3)))
+                        self.precisionedit.insertPlainText(str(round(self.precision,3)))
+                        self.fscoreedit.insertPlainText(str(round(self.f_score,3)))
+                        self.matrix_model = PandasModel(pd.DataFrame(confusion_matrix(self.predictions,self.test_df.label)))
+                        self.matrix.resizeRowsToContents()
+                        self.matrix.resizeColumnsToContents()
+                        self.matrix.setModel(self.matrix_model)
+                except:
+                        ctypes.windll.user32.MessageBoxW(0, "Error occured.", "Error!", 0)
+
+        def InsertValues(self):
+                data_num=[]
+                for col in self.df.columns:
+                        if col not in ['Attrition','label'] :
+                                data_num.append(col)
+                self.user_input= User_Input(self.df,data_num,self.tree,self.forest)
+                self.user_input.setModal(True)
+                self.user_input.setAttribute(QtCore.Qt.WA_DeleteOnClose)                
+                self.user_input.exec()
+                try:
+                        if prediction == 0:
+                                self.class_predict.clear()
+                                self.class_predict.insertPlainText("No")
+                        else:
+                                self.class_predict.clear()
+                                self.class_predict.insertPlainText("Yes")
+                except:
+                        ctypes.windll.user32.MessageBoxW(0, "Error occured.", "Error!", 0)
+
 def get_relevent_rules(association_rules, list_of_interests):
         recommendation = []
         for r in association_rules.Rule:
@@ -1210,6 +1544,349 @@ def get_recommendation(item, rules):
         if X == item:
             recomendations.append(Y)
     return recomendations
+
+# 1. Train-Test-Split, 
+# test size is the percentage of the dataset that should be in the test set
+def train_test_split(df, test_size):
+    # make sure it is a float and get the number of instances in the test set
+    if isinstance(test_size, float):
+        test_size = round(test_size * len(df))
+    # get the indices for the test set
+    indices = df.index.tolist()
+    # choose them randomly
+    test_indices = random.sample(population=indices, k=test_size)
+    # separate into test and train
+    test_df = df.loc[test_indices]
+    train_df = df.drop(test_indices)
+    
+    return train_df, test_df
+
+
+# 2. Distinguish categorical and continuous features
+def determine_type_of_feature(df):
+    # in order to properly split the nodes, we need to know if a feature is categorical or continuous
+    feature_types = []
+    # this threshold is used to determine if a feature is categorical, it can be changed
+    n_unique_values_treshold = 15
+    for feature in df.columns:
+        # get all features except for the label
+        if feature != "label":
+            unique_values = df[feature].unique()
+            example_value = unique_values[0]
+            # we use the number of unique values and the type of the first value to determine the type of the feature
+            if (isinstance(example_value, str)) or (len(unique_values) <= n_unique_values_treshold):
+                feature_types.append("categorical")
+            else:
+                feature_types.append("continuous")
+    
+    return feature_types
+
+
+# 3. Accuracy
+def calculate_accuracy(predictions, labels):
+    # calculate the accuracy of the predictions
+    # we compare the predictions to the labels and count the number of correct predictions
+    predictions_correct = predictions == labels
+    accuracy = predictions_correct.mean()
+    
+    return accuracy
+
+# another method to calculate accuracy
+def accuracy(y_true, y_pred):
+    accuracy = np.sum(y_true == y_pred) / len(y_true)
+    return accuracy
+
+def precision(y_true, y_pred):
+    tp = np.sum(y_true * y_pred)
+    fp = np.sum((1 - y_true) * y_pred)
+    return tp / (tp + fp)
+
+def sensitivity(y_true, y_pred):
+    tp = np.sum(y_true * y_pred)
+    fn = np.sum(y_true * (1 - y_pred))
+    return tp / (tp + fn)
+
+def specificity(y_true, y_pred):
+    tn = np.sum((1 - y_true) * (1 - y_pred))
+    fp = np.sum((1 - y_true) * y_pred)
+    return tn / (tn + fp)
+
+def f_score(y_true, y_pred):
+    tp = np.sum(y_true * y_pred)
+    fn = np.sum(y_true * (1 - y_pred))
+    fp = np.sum((1 - y_true) * y_pred)
+    precision = tp / (tp + fp)
+    recall = tp / (tp + fn)
+    return 2 * precision * recall / (precision + recall)
+
+# confusion matrix containing true positives, false negatives, false positives and true negatives
+def confusion_matrix(y_true, y_pred):
+    tp = np.sum(y_true * y_pred)
+    fn = np.sum(y_true * (1 - y_pred))
+    fp = np.sum((1 - y_true) * y_pred)
+    tn = np.sum((1 - y_true) * (1 - y_pred))
+    return np.array([[tp, fn], [fp, tn]])
+
+# 1. Decision Tree helper functions 
+
+# 1.1 Data pure
+def check_purity(data):
+    # check if labels are pure, i.e. all belong to the same class
+    label_column = data[:, -1]
+    unique_classes = np.unique(label_column)
+
+    if len(unique_classes) == 1:
+        return True
+    else:
+        return False
+
+    
+# 1.2 Classify
+def classify_data(data):
+    # get the labels of the data and return the most common one (majority vote)
+    label_column = data[:, -1]
+    unique_classes, counts_unique_classes = np.unique(label_column, return_counts=True)
+
+    index = counts_unique_classes.argmax()
+    classification = unique_classes[index]
+    
+    return classification
+
+
+# 1.3 Potential splits?
+def get_potential_splits(data, random_subspace):
+    
+    potential_splits = {}
+    _, n_columns = data.shape
+    column_indices = list(range(n_columns - 1))    # excluding the last column which is the label
+    
+    # if we decide to take a limited amount of features, we randomly choose a subset of them, this is only used for random forests
+    if random_subspace and random_subspace <= len(column_indices):
+        column_indices = random.sample(population=column_indices, k=random_subspace)
+    
+    # we iterate over all columns and find the unique values in each column, in order to determine the splits in our decision tree
+    for column_index in column_indices:          
+        values = data[:, column_index]
+        unique_values = np.unique(values)
+        
+        potential_splits[column_index] = unique_values
+    
+    return potential_splits
+
+
+# 1.4 Lowest Overall Entropy?
+def calculate_entropy(data):
+    # simply calculate the entropy of the data
+    label_column = data[:, -1]
+    _, counts = np.unique(label_column, return_counts=True)
+
+    probabilities = counts / counts.sum()
+    entropy = sum(probabilities * -np.log2(probabilities))
+     
+    return entropy
+
+# this is done to calculate the entropy of the split leaves
+def calculate_overall_entropy(data_below, data_above):
+    # data below is the left leaf and data above is the right leaf
+    n = len(data_below) + len(data_above)
+    p_data_below = len(data_below) / n
+    p_data_above = len(data_above) / n
+    
+    #calculate both their entropy, sum them and return the overall entropy
+    overall_entropy =  (p_data_below * calculate_entropy(data_below) 
+                      + p_data_above * calculate_entropy(data_above))
+    
+    return overall_entropy
+
+
+def determine_best_split(data, potential_splits):
+    # we iterate over all potential splits and calculate the overall entropy of the split leaves
+    overall_entropy = 9999
+    for column_index in potential_splits:
+        for value in potential_splits[column_index]:
+            data_below, data_above = split_data(data, split_column=column_index, split_value=value)
+            # remove empty lines
+            if(len(data_below)==0 or len(data_above)==0):
+                break
+            
+            current_overall_entropy = calculate_overall_entropy(data_below, data_above)
+            #compare last calculated overall entropy with the current one, if it is lower, we update the best split
+            if current_overall_entropy <= overall_entropy:
+                overall_entropy = current_overall_entropy
+                best_split_column = column_index
+                best_split_value = value
+    #once we have iterated over all potential splits and compared them, we return the best split
+    return best_split_column, best_split_value
+
+
+# 1.5 Split data
+def split_data(data, split_column, split_value):
+    
+    split_column_values = data[:, split_column]
+    #check the type of the feature whether it is continuous or categorical
+    type_of_feature = FEATURE_TYPES[split_column]
+    if type_of_feature == "continuous":
+        #if continuous we compare in values larger or smaller
+        data_below = data[split_column_values <= split_value]
+        data_above = data[split_column_values >  split_value]
+    
+    # feature is categorical   
+    else:
+        #if feature is categorical we compare in values equal or not equal
+        data_below = data[split_column_values == split_value]
+        data_above = data[split_column_values != split_value]
+    # we return the leaves
+    return data_below, data_above
+
+
+# 2. Decision Tree Algorithm
+def decision_tree_algorithm(df, counter=0, min_samples=2, max_depth=5, random_subspace=None):
+    
+    # data preparations
+    if counter == 0:
+        # we need to store the data globally, so we can use it in the helper functions
+        global COLUMN_HEADERS, FEATURE_TYPES
+        COLUMN_HEADERS = df.columns
+        FEATURE_TYPES = determine_type_of_feature(df)
+        data = df.values
+    else:
+        data = df           
+    
+    
+    # base cases
+    # since our loop is recursive, this will be our end case for a leaf node
+    # if the node only has data of one class, we return the class and stop splitting, it will then be a terminal leaf node
+    if (check_purity(data)) or (len(data) < min_samples) or (counter == max_depth):
+        classification = classify_data(data)
+        
+        return classification
+
+    
+    # recursive part
+    else:    
+        counter += 1
+
+        # helper functions 
+        potential_splits = get_potential_splits(data, random_subspace)
+        split_column, split_value = determine_best_split(data, potential_splits)
+        data_below, data_above = split_data(data, split_column, split_value)
+        
+        # check for empty data
+        if len(data_below) == 0 or len(data_above) == 0:
+            classification = classify_data(data)
+            # the node cannod be split anymore, so we return the class, it is a terminal node
+            return classification
+        
+        # determine question
+        feature_name = COLUMN_HEADERS[split_column]
+        type_of_feature = FEATURE_TYPES[split_column]
+        # feature is continuous, we use <=
+        if type_of_feature == "continuous":
+            question = "{}__<=__{}".format(feature_name, split_value)
+            
+        # feature is categorical, we use =
+        else:
+            question = "{}__=__{}".format(feature_name, split_value)
+        
+        # instantiate sub-tree
+        sub_tree = {question: []}
+        
+        # find answers (recursion)
+        # yes is the left leaf, no is the right leaf
+        yes_answer = decision_tree_algorithm(data_below, counter, min_samples, max_depth, random_subspace)
+        no_answer = decision_tree_algorithm(data_above, counter, min_samples, max_depth, random_subspace)
+        
+        # If the answers are the same, then there is no point in asking the qestion.
+        # This could happen when the data is classified even though it is not pure
+        # yet (min_samples or max_depth base case).
+        if yes_answer == no_answer:
+            sub_tree = yes_answer
+        else:
+            sub_tree[question].append(yes_answer)
+            sub_tree[question].append(no_answer)
+        # we construct the tree and return it
+        return sub_tree
+
+
+# 3. Make predictions
+# 3.1 One example
+def predict_example(example, tree):
+    # this is to predict only one instance
+    # get the node questions in order to classify
+    question = list(tree.keys())[0]
+    #print(question + '\n')
+    
+    #print(example)
+    feature_name, comparison_operator, value = question.split("__")
+
+    # ask question
+    if comparison_operator == "<=":
+        if example[feature_name] <= float(value):
+            answer = tree[question][0]
+        else:
+            answer = tree[question][1]
+    
+    # feature is categorical
+    else:
+        if str(example[feature_name]) == value:
+            # we go to the left leaf
+            answer = tree[question][0]
+        else:
+            # we go to the right leaf
+            answer = tree[question][1]
+
+    # base case
+    # if the answer is not a sub-tree, that means it's a terminal node, we return the classification
+    if not isinstance(answer, dict):
+        return answer
+    
+    # recursive part
+    # we go deeper into the tree using the sub-tree returned in the answer
+    else:
+        residual_tree = answer
+        return predict_example(example, residual_tree)
+
+    
+# 3.2 All examples of the test data
+def decision_tree_predictions(test_df, tree):
+    # we predict all the instances in the test data using a loop
+    predictions = test_df.apply(predict_example, args=(tree,), axis=1)
+    return predictions
+
+# creating the dataset for each decision tree of the forest
+def bootstrapping(train_df, n_bootstrap):
+    bootstrap_indices = np.random.randint(low=0, high=len(train_df), size=n_bootstrap)
+    df_bootstrapped = train_df.iloc[bootstrap_indices]
+    
+    return df_bootstrapped
+
+# creating the forest
+def random_forest_algorithm(train_df, n_trees, n_bootstrap, n_features, dt_max_depth):
+    forest = []
+    for i in range(n_trees):
+        # we generate a sub dataset for each tree
+        df_bootstrapped = bootstrapping(train_df, n_bootstrap)
+        # we train each tree using the sub dataset
+        tree = decision_tree_algorithm(df_bootstrapped, max_depth=dt_max_depth, random_subspace=n_features)
+        # we add the tree to the forest
+        forest.append(tree)
+    
+    return forest
+
+def random_forest_predictions(test_df, forest):
+    df_predictions = {}
+    for i in range(len(forest)):
+        # we organize every prediction in a dictionary
+        column_name = "tree_{}".format(i)
+        predictions = decision_tree_predictions(test_df, tree=forest[i])
+        df_predictions[column_name] = predictions
+    # we create a dataframe from the dictionary of predictions
+    df_predictions = pd.DataFrame(df_predictions)
+    # we make the final prediction by taking the mode of the predictions, aka majority vote
+    random_forest_predictions = df_predictions.mode(axis=1)[0]
+    
+    return random_forest_predictions
+
         
 app = QtWidgets.QApplication(sys.argv)
 window = Ui()
