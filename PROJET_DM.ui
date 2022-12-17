@@ -1885,6 +1885,9 @@ QPushButton:focus {
        <string notr="true">background-color:rgb(255, 147, 203);
 color: rgb(51, 23, 84);</string>
       </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
      </widget>
      <widget class="QPushButton" name="get_acc_forest">
       <property name="geometry">
@@ -2057,6 +2060,9 @@ color: rgb(255, 105, 185);</string>
        <string notr="true">background-color:rgb(255, 147, 203);
 color: rgb(51, 23, 84);</string>
       </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
      </widget>
      <widget class="QPlainTextEdit" name="specificity">
       <property name="geometry">
@@ -2071,6 +2077,9 @@ color: rgb(51, 23, 84);</string>
        <string notr="true">background-color:rgb(255, 147, 203);
 color: rgb(51, 23, 84);</string>
       </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
      </widget>
      <widget class="QPlainTextEdit" name="fscore">
       <property name="geometry">
@@ -2084,6 +2093,9 @@ color: rgb(51, 23, 84);</string>
       <property name="styleSheet">
        <string notr="true">background-color:rgb(255, 147, 203);
 color: rgb(51, 23, 84);</string>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QLabel" name="label_33">
@@ -2116,6 +2128,9 @@ color: rgb(255, 105, 185);</string>
        <string notr="true">background-color:rgb(255, 147, 203);
 color: rgb(51, 23, 84);</string>
       </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
      </widget>
      <widget class="QLabel" name="label_34">
       <property name="geometry">
@@ -2146,6 +2161,9 @@ color: rgb(255, 105, 185);</string>
       <property name="styleSheet">
        <string notr="true">background-color:rgb(255, 147, 203);
 color: rgb(51, 23, 84);</string>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QLabel" name="label_35">
