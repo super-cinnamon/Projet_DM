@@ -404,6 +404,25 @@ class Ui(QtWidgets.QMainWindow):
                 self.matrix.resizeRowsToContents()
                 self.matrix.resizeColumnsToContents()
 
+                self.epsilon_spin = self.findChild(QtWidgets.QDoubleSpinBox,'epsilon_spin')
+                self.min_samples_spin = self.findChild(QtWidgets.QSpinBox,'min_samples_spin')
+                self.number_of_clusters_text = self.findChild(QtWidgets.QPlainTextEdit,'nb_clusters_text')
+                self.execute_dbscan = self.findChild(QtWidgets.QPushButton,'execute_dbscan')
+                self.execute_dbscan.clicked.connect(self.ExecuteDBSCAN)
+                self.runtime_2 = self.findChild(QtWidgets.QPlainTextEdit,'runtime_2')
+                self.noise_text = self.findChild(QtWidgets.QPlainTextEdit,'noise_text')
+                self.accuracy_dbscan = self.findChild(QtWidgets.QPushButton,'accuracy_dbscan')
+                self.accuracy_dbscan.clicked.connect(self.GetAccuracyDBSCAN)
+                self.accuracy_edit_3 = self.findChild(QtWidgets.QPlainTextEdit,'accuracy_edit_3')
+                self.sensitivity_2 = self.findChild(QtWidgets.QPlainTextEdit,'sensitivity_2')
+                self.specificity_2 = self.findChild(QtWidgets.QPlainTextEdit,'specificity_2')
+                self.precision_2 = self.findChild(QtWidgets.QPlainTextEdit,'precision_2')
+                self.fscore_2 = self.findChild(QtWidgets.QPlainTextEdit,'fscore_2')
+                self.matrix_2 = self.findChild(QtWidgets.QTableView,'matrix_2')
+                self.matrix_2.setStyleSheet("QTableView {background-color:rgb(99,78,163); color:white; gridline-color: black; border-color: rgb(242, 128, 133); font:350 11px 'Bahnschrift SemiLight';} QHeaderView::section {background-color: rgb(63, 50, 105);color: white;height: 20px;width: 20px; font:350 10px 'Bahnschrift SemiLight';} QTableCornerButton::section {background-color: rgb(63, 50, 105); color: rgb(200, 200, 200);}")
+                self.matrix_2.resizeRowsToContents()
+                self.matrix_2.resizeColumnsToContents()
+
                 self.pandasTv=self.findChild(QtWidgets.QTableView,'pandasTv')
                 self.pandasTv.setStyleSheet("QTableView {background-color:rgb(16, 5, 44);}")
                 self.pandasTv.setSortingEnabled(True)
@@ -1080,6 +1099,78 @@ class Ui(QtWidgets.QMainWindow):
                                 self.class_predict.clear()
                                 self.class_predict.insertPlainText("Yes")
                 except:
+                        ctypes.windll.user32.MessageBoxW(0, "Error occured.", "Error!", 0)
+        
+        def ExecuteDBSCAN(self):
+                try:
+                        old_df = self.df.copy()
+                        df = old_df.copy()
+                        columns = ['Department', 'EducationField', 'JobRole', 'MaritalStatus', 'OverTime']
+                        print('prob 1')
+                        #target based encoding, each category of the column will bear the mean
+                        for column in columns:
+                                if column == 'Department':
+                                        df[column] = df.groupby(column)['JobSatisfaction'].transform('mean')
+                                elif column == 'EducationField':
+                                        df[column] = df.groupby(column)['HourlyRate'].transform('mean')
+                                elif column == 'JobRole':
+                                        df[column] = df.groupby(column)['HourlyRate'].transform('mean')
+                                elif column == 'MaritalStatus':
+                                        df[column] = df.groupby(column)['WorkLifeBalance'].transform('mean')
+                                elif column == 'OverTime':
+                                        df[column] = df.groupby(column)['YearsSinceLastPromotion'].transform('mean')
+                        print('prob 2')
+                        self.Y = old_df['Attrition'].values
+                        df = df.drop(['Attrition'], axis=1)
+                        self.X = df.values
+                        print('prob 3')
+                        start = timeit.default_timer()
+                        self.dbscan = DBSCAN(eps=self.epsilon_spin.value(), min_pts=self.min_samples_spin.value(),data=self.X)
+                        self.dbscan.fit()                        
+                        stop = timeit.default_timer()
+                        print(stop-start)
+                        self.clusters = self.dbscan.get_clusters()
+                        self.noise = self.dbscan.get_noise()
+                        self.number_of_clusters_text.clear()
+                        self.number_of_clusters_text.insertPlainText(str(len(self.clusters)))
+                        self.noise_text.clear()
+                        self.noise_text.insertPlainText(str(len(self.noise)))
+                        self.runtime_2.clear()
+                        self.runtime_2.insertPlainText(str(round(stop-start,3)))
+                except Exception as e:
+                        print(e)
+                        ctypes.windll.user32.MessageBoxW(0, "Error occured.", "Error!", 0)
+
+        def GetAccuracyDBSCAN(self):
+                try:
+                        self.dbscan_res = {}
+                        val = 0
+                        for cluster in self.dbscan.get_clusters():
+                                for i in cluster:
+                                        self.dbscan_res[i] = val
+                                val += 1
+                        self.dbscan_res = {k: self.dbscan_res[k] for k in sorted(self.dbscan_res)}
+                        self.dbscan_res = list(self.dbscan_res.values())
+                        noise = self.dbscan.get_noise()
+                        R = np.delete(self.Y, noise)
+                        self.dbscan_res = np.array(self.dbscan_res)
+                        self.accuracy_edit_3.clear()
+                        self.accuracy_edit_3.insertPlainText(str(round(accuracy(R, self.dbscan_res),3)))
+                        self.sensitivity_2.clear()
+                        self.sensitivity_2.insertPlainText(str(round(sensitivity(R, self.dbscan_res),3)))
+                        self.specificity_2.clear()
+                        self.specificity_2.insertPlainText(str(round(specificity(R, self.dbscan_res),3)))
+                        self.precision_2.clear()
+                        self.precision_2.insertPlainText(str(round(precision(R, self.dbscan_res),3)))
+                        self.fscore_2.clear()
+                        self.fscore_2.insertPlainText(str(round(f_score(R, self.dbscan_res),3)))
+                        self.matrix_model_2 = PandasModel(pd.DataFrame(confusion_matrix(R, self.dbscan_res),index=['1','0'],columns=['1','0']))
+                        self.matrix_2.resizeRowsToContents()
+                        self.matrix_2.resizeColumnsToContents()
+                        self.matrix_2.setModel(self.matrix_model_2)
+
+                except Exception as e:
+                        print(e)
                         ctypes.windll.user32.MessageBoxW(0, "Error occured.", "Error!", 0)
 
 def get_relevent_rules(association_rules, list_of_interests):
@@ -1888,6 +1979,68 @@ def random_forest_predictions(test_df, forest):
     random_forest_predictions = df_predictions.mode(axis=1)[0]
     
     return random_forest_predictions
+
+class DBSCAN: 
+    def __init__(self, eps, min_pts, data):
+        self.eps = eps
+        self.min_pts = min_pts
+        self.data = data
+        self.clusters = []
+        self.noise = []
+        self.core_pts = []
+        self.visited = []
+        self.clustered = []
+        self.cluster_num = 0
+        self.clustered_pts = []
+        
+    def _distance(self, p1, p2):
+        # result = 0
+        # for i in range(len(p1)):
+        #     if(type(p1[i]) == str or type(p2[i]) == str):
+        #         if(p1[i] != p2[i]):
+        #             result += 1
+        #     else : result += (p1[i] - p2[i]) ** 2
+        # return math.sqrt(result)
+        return math.sqrt(sum([(a - b) ** 2 for a, b in zip(p1, p2)]))
+    
+    def _region_query(self, point):
+        neighbors = []
+        for i in range(len(self.data)):
+            if self._distance(point, self.data[i]) < self.eps:
+                neighbors.append(i)
+        return neighbors
+    
+    def _expand_cluster(self, point, neighbors):
+        self.clusters[self.cluster_num].append(point)
+        self.clustered.append(point)
+        self.visited.append(point)
+        for i in neighbors:
+            if i not in self.visited:
+                self.visited.append(i)
+                new_neighbors = self._region_query(self.data[i])
+                if len(new_neighbors) >= self.min_pts:
+                    neighbors += new_neighbors
+            if i not in self.clustered:
+                self.clusters[self.cluster_num].append(i)
+                self.clustered.append(i)
+                
+    def fit(self):
+        for i in range(len(self.data)):
+            if i not in self.visited:
+                self.visited.append(i)
+                neighbors = self._region_query(self.data[i])
+                if len(neighbors) < self.min_pts:
+                    self.noise.append(i)
+                else:
+                    self.clusters.append([])
+                    self._expand_cluster(i, neighbors)
+                    self.cluster_num += 1
+                    
+    def get_clusters(self):
+        return self.clusters
+    
+    def get_noise(self):
+        return self.noise
 
         
 app = QtWidgets.QApplication(sys.argv)
