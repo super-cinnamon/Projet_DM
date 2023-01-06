@@ -2619,7 +2619,7 @@ color: rgb(255, 105, 185);</string>
        <rect>
         <x>30</x>
         <y>110</y>
-        <width>91</width>
+        <width>71</width>
         <height>20</height>
        </rect>
       </property>
@@ -2628,7 +2628,7 @@ color: rgb(255, 105, 185);</string>
 color: rgb(255, 105, 185);</string>
       </property>
       <property name="text">
-       <string>min samples</string>
+       <string>min points</string>
       </property>
      </widget>
      <widget class="QDoubleSpinBox" name="epsilon_spin">
@@ -2691,7 +2691,7 @@ QPushButton:focus {
       <property name="geometry">
        <rect>
         <x>320</x>
-        <y>50</y>
+        <y>90</y>
         <width>80</width>
         <height>24</height>
        </rect>
@@ -2719,7 +2719,7 @@ QPushButton:focus {
       <property name="geometry">
        <rect>
         <x>300</x>
-        <y>90</y>
+        <y>120</y>
         <width>131</width>
         <height>20</height>
        </rect>
@@ -2736,7 +2736,7 @@ color: rgb(255, 105, 185);</string>
       <property name="geometry">
        <rect>
         <x>300</x>
-        <y>110</y>
+        <y>140</y>
         <width>121</width>
         <height>25</height>
        </rect>
@@ -2744,34 +2744,6 @@ color: rgb(255, 105, 185);</string>
       <property name="styleSheet">
        <string notr="true">background-color:rgb(255, 147, 203);
 color: rgb(51, 23, 84);</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="get_results_agnes">
-      <property name="geometry">
-       <rect>
-        <x>320</x>
-        <y>140</y>
-        <width>80</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">QPushButton{
-	background-color:rgb(255, 147, 203);
-	border-radius:10px;
-	border-style:outset;
-	color: rgb(51, 23, 84);
-}
-QPushButton:hover {
-            background-color: rgb(246, 252, 126);
-        }
-QPushButton:focus {
-            background-color: rgb(90, 71, 173);
-        }
-</string>
-      </property>
-      <property name="text">
-       <string>get results</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_89">
@@ -2799,6 +2771,15 @@ color: rgb(255, 105, 185);</string>
         <width>141</width>
         <height>81</height>
        </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-width:2px;
+border-radius:10px;
+border-width:2px;
+border-style:outset;
+border-color: rgb(148, 88, 122);
+background-color: rgb(255, 255, 255);
+font: 350 10pt &quot;Bahnschrift SemiLight&quot;;</string>
       </property>
      </widget>
      <widget class="QPushButton" name="inter_btn">
@@ -3019,7 +3000,7 @@ QPushButton:focus {
       <property name="geometry">
        <rect>
         <x>320</x>
-        <y>180</y>
+        <y>170</y>
         <width>80</width>
         <height>24</height>
        </rect>
@@ -3058,6 +3039,54 @@ color: rgb(255, 105, 185);</string>
       </property>
       <property name="text">
        <string>Accuracy</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="linkage_combo">
+      <property name="geometry">
+       <rect>
+        <x>301</x>
+        <y>60</y>
+        <width>121</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color:rgb(255, 147, 203);
+	border-radius:10px;
+	border-style:outset;
+color: rgb(51, 23, 84);</string>
+      </property>
+      <item>
+       <property name="text">
+        <string>average</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>single</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>complete</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QLabel" name="label_92">
+      <property name="geometry">
+       <rect>
+        <x>340</x>
+        <y>40</y>
+        <width>61</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 600 11pt &quot;Bahnschrift SemiBold&quot;;
+color: rgb(255, 105, 185);</string>
+      </property>
+      <property name="text">
+       <string>Linkage</string>
       </property>
      </widget>
     </widget>

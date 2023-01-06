@@ -422,6 +422,22 @@ class Ui(QtWidgets.QMainWindow):
                 self.matrix_2.setStyleSheet("QTableView {background-color:rgb(99,78,163); color:white; gridline-color: black; border-color: rgb(242, 128, 133); font:350 11px 'Bahnschrift SemiLight';} QHeaderView::section {background-color: rgb(63, 50, 105);color: white;height: 20px;width: 20px; font:350 10px 'Bahnschrift SemiLight';} QTableCornerButton::section {background-color: rgb(63, 50, 105); color: rgb(200, 200, 200);}")
                 self.matrix_2.resizeRowsToContents()
                 self.matrix_2.resizeColumnsToContents()
+                self.linkage_combo = self.findChild(QtWidgets.QComboBox,'linkage_combo')
+                self.execute_agnes = self.findChild(QtWidgets.QPushButton,'execute_agnes')
+                self.execute_agnes.clicked.connect(self.ExecuteAGNES)
+                self.nb_clusters_spin = self.findChild(QtWidgets.QSpinBox,'nb_clusters_spin')
+                #self.get_results_agnes = self.findChild(QtWidgets.QPushButton,'get_results_agnes')
+                #self.get_results_agnes.clicked.connect(self.GetResultsAGNES)
+                self.accuracy_agnes = self.findChild(QtWidgets.QPushButton,'accuracy_agnes')
+                self.accuracy_agnes.clicked.connect(self.GetAccuracyAGNES)
+                self.inter_btn = self.findChild(QtWidgets.QPushButton,'inter_btn')
+                self.inter_btn.clicked.connect(self.InterCluster)
+                self.intra_btn = self.findChild(QtWidgets.QPushButton,'intra_btn')
+                self.intra_btn.clicked.connect(self.IntraCluster)
+                self.distances_list = self.findChild(QtWidgets.QListView,'distances_list')
+                self.listModel2 = QtGui.QStandardItemModel()
+                self.distances_list.setModel(self.listModel2)
+
 
                 self.pandasTv=self.findChild(QtWidgets.QTableView,'pandasTv')
                 self.pandasTv.setStyleSheet("QTableView {background-color:rgb(16, 5, 44);}")
@@ -1173,6 +1189,81 @@ class Ui(QtWidgets.QMainWindow):
                         print(e)
                         ctypes.windll.user32.MessageBoxW(0, "Error occured.", "Error!", 0)
 
+        def ExecuteAGNES(self):
+                try:
+                        old_df = self.df.copy()
+                        df = old_df.copy()
+                        columns = ['Department', 'EducationField', 'JobRole', 'MaritalStatus', 'OverTime']
+                        print('prob 1')
+                        #target based encoding, each category of the column will bear the mean
+                        for column in columns:
+                                if column == 'Department':
+                                        df[column] = df.groupby(column)['JobSatisfaction'].transform('mean')
+                                elif column == 'EducationField':
+                                        df[column] = df.groupby(column)['HourlyRate'].transform('mean')
+                                elif column == 'JobRole':
+                                        df[column] = df.groupby(column)['HourlyRate'].transform('mean')
+                                elif column == 'MaritalStatus':
+                                        df[column] = df.groupby(column)['WorkLifeBalance'].transform('mean')
+                                elif column == 'OverTime':
+                                        df[column] = df.groupby(column)['YearsSinceLastPromotion'].transform('mean')
+                        print('prob 2')
+                        self.Y = old_df['Attrition'].values
+                        df = df.drop(['Attrition'], axis=1)
+                        self.X = df.values
+                        print('prob 3')
+                        start = timeit.default_timer()
+                        self.agnes = AGNES(n_clusters=self.nb_clusters_spin.value(), linkage=self.linkage_combo.currentText())
+                        self.agnes.fit_predict(self.X)
+                        stop = timeit.default_timer()
+                        print(stop-start)
+                        self.runtime_2.clear()
+                        self.runtime_2.insertPlainText(str(round(stop-start,3)))
+                except Exception as e:
+                        print(e)
+                        ctypes.windll.user32.MessageBoxW(0, "Error occured.", "Error!", 0)
+
+        def GetAccuracyAGNES(self):
+                try :
+                        results = self.agnes.get_results()
+                        self.accuracy_edit_3.clear()
+                        self.accuracy_edit_3.insertPlainText(str(round(accuracy(self.Y, results[self.nb_clusters_spin.value()][0]),3)))
+                        self.sensitivity_2.clear()
+                        self.sensitivity_2.insertPlainText(str(round(sensitivity(self.Y, results[self.nb_clusters_spin.value()][0]),3)))
+                        self.specificity_2.clear()
+                        self.specificity_2.insertPlainText(str(round(specificity(self.Y, results[self.nb_clusters_spin.value()][0]),3)))
+                        self.precision_2.clear()
+                        self.precision_2.insertPlainText(str(round(precision(self.Y, results[self.nb_clusters_spin.value()][0]),3)))
+                        self.fscore_2.clear()
+                        self.fscore_2.insertPlainText(str(round(f_score(self.Y, results[self.nb_clusters_spin.value()][0]),3)))
+                        self.matrix_model_2 = PandasModel(pd.DataFrame(confusion_matrix(self.Y, results[self.nb_clusters_spin.value()][0]),index=['1','0'],columns=['1','0']))
+                        self.matrix_2.resizeRowsToContents()
+                        self.matrix_2.resizeColumnsToContents()
+                        self.matrix_2.setModel(self.matrix_model_2)
+                except Exception as e:
+                        print(e)
+                        ctypes.windll.user32.MessageBoxW(0, "Error occured.", "Error!", 0)
+
+        def InterCluster(self):
+                try:
+                        results = self.agnes.get_results()
+                        self.listModel2.removeRows( 0, self.listModel2.rowCount())
+                        for item in inter_cluster(self.X,results[self.nb_clusters_spin.value()][0]):
+                                self.listModel2.appendRow(QtGui.QStandardItem(str(item)))   
+                except Exception as e:
+                        print(e)
+                        ctypes.windll.user32.MessageBoxW(0, "Error occured.", "Error!", 0)
+        
+        def IntraCluster(self):
+                try:
+                        results = self.agnes.get_results()
+                        self.listModel2.removeRows( 0, self.listModel2.rowCount())
+                        for item in intra_cluster(self.X,results[self.nb_clusters_spin.value()][0]):
+                                self.listModel2.appendRow(QtGui.QStandardItem(str(item)))                        
+                except Exception as e:
+                        print(e)
+                        ctypes.windll.user32.MessageBoxW(0, "Error occured.", "Error!", 0)
+
 def get_relevent_rules(association_rules, list_of_interests):
         recommendation = []
         for r in association_rules.Rule:
@@ -1207,9 +1298,7 @@ def discretisation_effectifs(df_column, Q, method):
         # we return the reduced column and then we just make another function to loop over the df?
         # but in this case we need to ask the chosen method for each column so idk about that lol 
         # they must also have the same number of quantiles too so
-        return quantiles
-
-        
+        return quantiles        
 
 import math
 def discretisation_amplitude(df_column, K, method):
@@ -2042,7 +2131,146 @@ class DBSCAN:
     def get_noise(self):
         return self.noise
 
+class AGNES:
+    def __init__(self, n_clusters=2, linkage='average'):
+        self.n_clusters = n_clusters
+        self.linkage = linkage
+        self.labels_ = None
+        self.cluster_centers_ = None
+        self.n_leaves = None
+        self.results = {}
+        self.linkage_matrix = []
+        self.merge_history = []
+
+    def fit(self, X):
+        #X = np.array([self.string_to_numerical(x) for x in X])
         
+        self.n_leaves = X.shape[0]
+        self.labels_ = np.arange(self.n_leaves)
+        self.cluster_centers_ = X.copy()
+        self.results[self.n_leaves] = [self.labels_.copy(), self.cluster_centers_.copy()]
+        self.linkage_matrix = np.empty((0,4), dtype=float)
+        self.merge_history = list(range(X.shape[0]))
+        #print(self.merge_history)
+        # while self.n_leaves >= self.n_clusters:
+        #     self.merge()
+
+        while self.n_leaves >= 1:
+            self.merge()
+            self.results[self.n_leaves] = [self.labels_.copy(), self.cluster_centers_.copy()]
+        return self
+
+    def merge(self):
+        dist = self.distance(self.cluster_centers_)
+        np.fill_diagonal(dist, np.inf)
+        i, j = np.unravel_index(dist.argmin(), dist.shape)
+        #i, j = np.unravel_index(self.masked_argmin(dist,0), dist.shape)
+        self.cluster_centers_[i] = self._linkage(i, j)
+        
+        self.cluster_centers_ = np.delete(self.cluster_centers_, j, axis=0)
+        self.labels_[self.labels_ == j] = i
+        self.labels_[self.labels_ > j] -= 1
+        self.n_leaves -= 1
+        # we need to keep track of the clusters, problem is i and j are being lost
+        self.linkage_matrix = np.vstack((self.linkage_matrix, [self.merge_history[i], self.merge_history[j], dist[i, j], self.n_leaves]))
+        #print(i,j)
+        self.merge_history[i] = max(self.merge_history)+1
+        self.merge_history[j] = max(self.merge_history)+1
+    
+    def get_linkage_matrix(self):
+        return self.linkage_matrix
+    
+    def string_to_numerical(self,arr):
+        """Convert a string to a numerical value"""
+        # Convert the string to a list of ASCII values
+        new_arr = []
+        for s in arr:
+            #print(type(s))
+            if (type(s) == str):
+                ascii_values = [ord(c) for c in s]
+                # Convert the list of ASCII values to a numpy array
+                ascii_array = np.array(ascii_values)
+                # Return the sum of the array
+                new_arr.append(ascii_array.sum())
+            else: new_arr.append(s)
+        return np.array(new_arr)
+
+    def distance(self, X):
+        return np.sqrt(-2 * np.dot(X, X.T) + np.sum(X ** 2, axis=1) + np.sum(X ** 2, axis=1)[:, np.newaxis])
+
+
+    def _distance(self, p1, p2):
+        result = 0
+        for i in range(len(p1)):
+            if(type(p1[i]) == str or type(p2[i]) == str):
+                if(p1[i] != p2[i]):
+                    result += 1
+            else : result += (p1[i] - p2[i]) ** 2
+        return math.sqrt(result)
+
+    def distance2(self, X):
+        distances = []
+        for i in range(len(X)):
+            for j in range(len(X)):
+                distances.append(self._distance(X[i], X[j]))
+        return np.array(distances).reshape(len(X), len(X))
+                
+    
+
+    def _linkage(self, i, j):
+        if self.linkage == 'average':
+            # linkage = []
+            # for i in range (len(self.cluster_centers_[i])):
+            #     if type(self.cluster_centers_[i][i]) == str:
+            #         if self.cluster_centers_[i][i] != self.cluster_centers_[j][i]:
+            #             linkage.append(0)
+            #         else: linkage.append(1)
+            #     else: linkage.append((self.cluster_centers_[i][i] + self.cluster_centers_[j][i]))
+            # linkage = np.array(linkage)
+            # return linkage / 2
+            return (self.cluster_centers_[i] + self.cluster_centers_[j]) / 2
+        elif self.linkage == 'single':
+            return np.minimum(self.cluster_centers_[i], self.cluster_centers_[j])
+        elif self.linkage == 'complete':
+            return np.maximum(self.cluster_centers_[i], self.cluster_centers_[j])
+        else:
+            raise ValueError('Unknown linkage method: {}'.format(self.linkage))
+
+    def predict(self, X):
+        return self.labels_
+
+    def fit_predict(self, X):
+        self.fit(X)
+        return self.predict(X)
+
+    def get_results(self):
+        return self.results
+
+def inter_cluster(X, labels):
+    # calculate the mean of each cluster
+    cluster_means = []
+    for i in range(len(np.unique(labels))):
+        cluster_means.append(np.mean(X[labels == i], axis=0))
+    cluster_means = np.array(cluster_means)
+    # calculate the mean of all data points
+    all_mean = np.mean(X, axis=0)
+    # calculate the inter cluster distance
+    inter_cluster_dist = np.sum(np.square(cluster_means - all_mean), axis=1)
+    return inter_cluster_dist
+
+def intra_cluster(X, labels):
+    # calculate the mean of each cluster
+    cluster_means = []
+    for i in range(len(np.unique(labels))):
+        cluster_means.append(np.mean(X[labels == i], axis=0))
+    cluster_means = np.array(cluster_means)
+    # calculate the intra cluster distance
+    intra_cluster_dist = []
+    for i in range(len(np.unique(labels))):
+        intra_cluster_dist.append(np.sum(np.square(X[labels == i] - cluster_means[i])))
+    intra_cluster_dist = np.array(intra_cluster_dist)
+    return intra_cluster_dist
+
 app = QtWidgets.QApplication(sys.argv)
 window = Ui()
 app.exec_()
