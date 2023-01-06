@@ -434,6 +434,8 @@ class Ui(QtWidgets.QMainWindow):
                 self.inter_btn.clicked.connect(self.InterCluster)
                 self.intra_btn = self.findChild(QtWidgets.QPushButton,'intra_btn')
                 self.intra_btn.clicked.connect(self.IntraCluster)
+                self.dendrogram = self.findChild(QtWidgets.QPushButton,'dendrogram_btn')
+                self.dendrogram.clicked.connect(self.Dendrogram)
                 self.distances_list = self.findChild(QtWidgets.QListView,'distances_list')
                 self.listModel2 = QtGui.QStandardItemModel()
                 self.distances_list.setModel(self.listModel2)
@@ -1263,6 +1265,15 @@ class Ui(QtWidgets.QMainWindow):
                 except Exception as e:
                         print(e)
                         ctypes.windll.user32.MessageBoxW(0, "Error occured.", "Error!", 0)
+
+        def Dendrogram(self):
+                try:
+                        draw_dendrogram(self.X, linkage_type=self.linkage_combo.currentText() )
+                        plt.show()
+                except Exception as e:
+                        print(e)
+                        ctypes.windll.user32.MessageBoxW(0, "Error occured.", "Error!", 0)
+                
 
 def get_relevent_rules(association_rules, list_of_interests):
         recommendation = []
@@ -2270,6 +2281,16 @@ def intra_cluster(X, labels):
         intra_cluster_dist.append(np.sum(np.square(X[labels == i] - cluster_means[i])))
     intra_cluster_dist = np.array(intra_cluster_dist)
     return intra_cluster_dist
+
+#import linkage and dendrogram from scipy
+from scipy.cluster.hierarchy import linkage, dendrogram
+def draw_dendrogram(X, linkage_type= 'average'):
+    # calculate the distance between each sample
+    distance_matrix = linkage(X, linkage_type)
+    # plot the dendrogram
+    dendrogram(distance_matrix)
+    plt.title("dendrogram for AGNES with linkage type " + linkage_type)
+    plt.show()
 
 app = QtWidgets.QApplication(sys.argv)
 window = Ui()
